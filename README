@@ -1,0 +1,15 @@
+NAME
+	Updater - update the Stanford Humanities Center website.
+	
+SYNOPSIS
+	update.py
+	
+DESCRIPTION
+	Fetches new events and blog posts from the Stanford Humanities Center Google Calendars and 
+	Tumblr blog.
+	
+AUTHOR
+	Christine Williams <christine.bennett.williams@gmail.com>
+	
+LICENSE
+	This software is released under the BSD license.  See LICENSE for more details.
