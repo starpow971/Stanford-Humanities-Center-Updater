@@ -4,7 +4,8 @@
 # Description: interface with calendar server, parse calendar responses, 
 # produce useful event objects.
 
-import json
+import xml.etree.ElementTree as ET
+
 
 class Event:
 	"""Represents a Google Calendar event."""
@@ -20,8 +21,33 @@ class Event:
 		self.location = location
 		self.status = status  # like "confirmed" or something.
 		self.description = description
+		
+
+NAMESPACE = "{http://www.w3.org/2005/Atom}"
+ENTRY_TAG = NAMESPACE + "entry"
+TITLE_TAG = NAMESPACE + "title"
+CONTENT_TAG = NAMESPACE + "content"
 
 
-def parseFeed(data):
-	parsed = json.loads(data)
-	print parsed
+def make_event(entry):
+  titletag = entry.find(TITLE_TAG)
+  if titletag is None:
+    #todo: log an error
+    return
+    
+  print titletag.text
+
+  contenttag = entry.find(CONTENT_TAG)
+  if contenttag is None:
+    #todo: log an error
+    return
+    
+  print contenttag.text
+
+def parse_feed(xml):
+	feed = ET.parse(xml)
+	entries = feed.findall(ENTRY_TAG)
+	for entry in entries:
+		make_event(entry)
+  	
+parse_feed("calendar.xml")
