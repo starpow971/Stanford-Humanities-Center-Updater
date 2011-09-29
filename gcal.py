@@ -22,6 +22,9 @@ class Event:
 		self.status = status  # like "confirmed" or something.
 		self.description = description
 		
+	def __repr__(self):
+		return "<calendar: '%s' title: '%s' description: '%s'>" % (
+				self.calendar_title, self.event_title, self.description[:10])
 
 NAMESPACE = "{http://www.w3.org/2005/Atom}"
 ENTRY_TAG = NAMESPACE + "entry"
@@ -29,25 +32,25 @@ TITLE_TAG = NAMESPACE + "title"
 CONTENT_TAG = NAMESPACE + "content"
 
 
-def make_event(entry):
+def make_event(entry, cal_title):
   titletag = entry.find(TITLE_TAG)
   if titletag is None:
     #todo: log an error
     return
-    
-  print titletag.text
 
   contenttag = entry.find(CONTENT_TAG)
   if contenttag is None:
     #todo: log an error
     return
-    
-  print contenttag.text
+  
+  return Event(calendar_title=cal_title, event_title=titletag.text, description=contenttag.text)
 
 def parse_feed(xml):
 	feed = ET.parse(xml)
+	cal_title = feed.find(TITLE_TAG)
 	entries = feed.findall(ENTRY_TAG)
 	for entry in entries:
-		make_event(entry)
+		print make_event(entry, cal_title.text)
+		
   	
 parse_feed("calendar.xml")
