@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 class Blog:
 	"""Represents a Tumblr blog post."""
 	
-	def __init__(self, post_title="", post_date=None, post_content="", post_category=""):
+	def __init__(self, post_title="", post_date="", post_content="", post_category=""):
 		self.post_title = post_title
 		self.post_date = post_date
 		self.post_content = post_content
@@ -19,12 +19,11 @@ class Blog:
 		return "<title: '%s' date: '%s' post: '%s' category: '%s'>" % (
 			self.post_title, self.post_date, self.post_content [40], self.post_category)
 			
-NAMESPACE = "{http://www.w3.org/2005/Atom}"
-ITEM_TAG = NAMESPACE + "item"
-TITLE_TAG = NAMESPACE + "title"
-DESCRIPTION_TAG = NAMESPACE + "description"
-DATE_TAG = NAMESPACE + "pubDate"
-CATEGORY_TAG = NAMESPACE + "category"
+ITEM_TAG = "channel/item"
+TITLE_TAG = "title"
+DESCRIPTION_TAG = "description"
+DATE_TAG = "pubDate"
+CATEGORY_TAG = "category"
 
 
 def make_post(item):
@@ -44,8 +43,13 @@ def make_post(item):
 		return
 	
 	categorytag = item.find(CATEGORY_TAG)
+	if categorytag is None:
+	  category = None
+	else:
+	  category = categorytag.text
 			
-	return Blog(post_title=titletag.text, post_date=datetag.text, post_content=descriptiontag.text, post_category=categorytag.text)
+	return Blog(post_title=titletag.text, post_date=datetag.text, 
+	            post_content=descriptiontag.text, post_category=category)
 	
 def parse_rss(xml):
 	rss = ET.parse(xml)
@@ -53,4 +57,5 @@ def parse_rss(xml):
 	for item in items:
 		print make_post(item)
 		
+#import pdb; pdb.set_trace()
 parse_rss("tumblr.xml")
