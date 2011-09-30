@@ -17,7 +17,7 @@ class Blog:
 		
 	def __repr__(self):
 		return "<title: '%s' date: '%s' post: '%s' category: '%s'>" % (
-			self.post_title, self.post_date, self.post_content [40], self.post_category)
+			self.post_title, self.post_date, self.post_content, self.post_category)
 			
 ITEM_TAG = "channel/item"
 TITLE_TAG = "title"
