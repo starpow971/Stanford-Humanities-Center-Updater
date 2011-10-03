@@ -10,6 +10,7 @@ class Blog:
 	"""Represents a Tumblr blog post."""
 	
 	def __init__(self, post_title="", post_date="", post_content="", post_category=""):
+	#todo: fix ASCII encoding problem.
 		self.post_title = post_title
 		self.post_date = post_date
 		self.post_content = post_content
