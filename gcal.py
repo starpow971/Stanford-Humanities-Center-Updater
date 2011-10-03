@@ -33,19 +33,26 @@ class Event:
 class EventDescription:
 	"""Represents data embedded in a Google Calendar description."""
 	
-	def __init__(self, start_time=None, end_time=None, location=""):
+	def __init__(self, start_time=None, end_time=None, location="", status="", 
+							 description=""):
 		self.start_time = start_time #A datetime.
 		self.end_time = end_time #A datetime.
 		self.location = location
+		self.status = status
+		self.description = description
 		
 	def __repr__(self):
-		return "<start time: %r end time: %r location: %s>" % (
-		    self.start_time, self.end_time, self.location)
+		return ("<start time: %r end time: %r location: %s status: %s "
+						"description: %s>") % (
+		    self.start_time, self.end_time, self.location, self.status, 
+		    self.description)
 		
 	def __eq__(self, other):
 		return (self.start_time == other.start_time and 
 						self.end_time == other.end_time and
-						self.location == other.location)
+						self.location == other.location and
+						self.status == other.status and
+						self.description == other.description)
 		
 
 NAMESPACE = "{http://www.w3.org/2005/Atom}"
@@ -54,6 +61,8 @@ TITLE_TAG = NAMESPACE + "title"
 CONTENT_TAG = NAMESPACE + "content"
 ID_TAG = NAMESPACE + "id"
 
+DESCRIPTION_STATUS_RE = re.compile(r'''Event Status:(?P<status>(\s+\w+)+)''')
+assert DESCRIPTION_STATUS_RE
 DESCRIPTION_WHERE_RE = re.compile(r'''Where:(?P<location>(\s+\w+)+)''')
 assert DESCRIPTION_WHERE_RE
 DESCRIPTION_WHEN_RE = re.compile(
@@ -86,7 +95,8 @@ def parse_description(description):
 		description: a string representing the content tag from a Google calendar feed.
 		
 	Returns: An event description object."""
-	when = DESCRIPTION_WHEN_RE.search(description)
+	meta, description = description.split("Event Description: ", 1)
+	when = DESCRIPTION_WHEN_RE.search(meta)
 	if not when:
 		raise ParseError()
 	when = when.groupdict()
@@ -108,13 +118,19 @@ def parse_description(description):
 	    int(when["day"]),
 	    end_hour,
 	    int(when["end_min"]))
-	where = DESCRIPTION_WHERE_RE.search(description)
+	where = DESCRIPTION_WHERE_RE.search(meta)
 	if not where:
 		raise ParseError()
 	where = where.groupdict()
 	location = where["location"].strip()
+	status = DESCRIPTION_STATUS_RE.search(meta)
+	if not status:
+		raise ParseError()
+	status = status.groupdict()
+	event_status = status["status"].strip()
 	return EventDescription(start_time=start_time, end_time=end_time, 
-													location=location)
+													location=location, status=event_status, 
+													description=description)
 	    
 
 def make_event(entry, cal_title):
