@@ -75,10 +75,11 @@ class GcalTest(unittest.TestCase):
 		description = gcal.parse_description(description1)
 		expected = gcal.EventDescription(
 				start_time = datetime.datetime(2011, 10, 13, 13, 30),
-				end_time = datetime.datetime(2011, 10, 13, 15, 30))
+				end_time = datetime.datetime(2011, 10, 13, 15, 30),
+				location = "Stanford Humanities Center Board Room")
 		self.assertEquals(expected, description)
 		
-	def testParse(self):
+	def tastParse(self):
 		events = gcal.parse_feed("calendar.xml")
 		expected = [gcal.Event(calendar_title = "Stanford Humanities Center Events", 
 														event_title = "Adams Bodomo: What is it like to be an African in China?",

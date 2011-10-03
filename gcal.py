@@ -33,16 +33,19 @@ class Event:
 class EventDescription:
 	"""Represents data embedded in a Google Calendar description."""
 	
-	def __init__(self, start_time=None, end_time=None):
+	def __init__(self, start_time=None, end_time=None, location=""):
 		self.start_time = start_time #A datetime.
 		self.end_time = end_time #A datetime.
+		self.location = location
 		
 	def __repr__(self):
-		return "<start time: %r end time: %r>" % (self.start_time, self.end_time)
+		return "<start time: %r end time: %r location: %s>" % (
+		    self.start_time, self.end_time, self.location)
 		
 	def __eq__(self, other):
 		return (self.start_time == other.start_time and 
-						self.end_time == other.end_time)
+						self.end_time == other.end_time and
+						self.location == other.location)
 		
 
 NAMESPACE = "{http://www.w3.org/2005/Atom}"
@@ -51,13 +54,14 @@ TITLE_TAG = NAMESPACE + "title"
 CONTENT_TAG = NAMESPACE + "content"
 ID_TAG = NAMESPACE + "id"
 
+DESCRIPTION_WHERE_RE = re.compile(r'''Where:(?P<location>(\s+\w+)+)''')
+assert DESCRIPTION_WHERE_RE
 DESCRIPTION_WHEN_RE = re.compile(
     r'''When:\s*(?P<weekday>\w+)\s+(?P<month>\w+)\s+(?P<day>\d+),\s+'''
     r'''(?P<year>\d+)\s+'''
     r'''(?P<start_hour>\d+):(?P<start_min>\d+)(?P<start_thing>am|pm)\s+to\s+'''
     r'''(?P<end_hour>\d+):(?P<end_min>\d+)(?P<end_thing>am|pm)\s+'''
-    r'''(?P<timezone>\w+)'''
-    , re.DOTALL)
+    r'''(?P<timezone>\w+)''')
 assert DESCRIPTION_WHEN_RE
 MONTHS = {
 		"jan": 1,
@@ -104,7 +108,13 @@ def parse_description(description):
 	    int(when["day"]),
 	    end_hour,
 	    int(when["end_min"]))
-	return EventDescription(start_time=start_time, end_time=end_time)
+	where = DESCRIPTION_WHERE_RE.search(description)
+	if not where:
+		raise ParseError()
+	where = where.groupdict()
+	location = where["location"].strip()
+	return EventDescription(start_time=start_time, end_time=end_time, 
+													location=location)
 	    
 
 def make_event(entry, cal_title):
