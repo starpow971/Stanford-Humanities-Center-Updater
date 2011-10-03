@@ -68,8 +68,10 @@ assert DESCRIPTION_WHERE_RE
 DESCRIPTION_WHEN_RE = re.compile(
     r'''When:\s*(?P<weekday>\w+)\s+(?P<month>\w+)\s+(?P<day>\d+),\s+'''
     r'''(?P<year>\d+)\s+'''
-    r'''(?P<start_hour>\d+):(?P<start_min>\d+)(?P<start_thing>am|pm)\s+to\s+'''
-    r'''(?P<end_hour>\d+):(?P<end_min>\d+)(?P<end_thing>am|pm)\s+'''
+    r'''(?P<start_hour>\d+)'''
+    r'''(:(?P<start_min>\d+))?(?P<start_thing>am|pm)\s+to\s+'''
+    r'''(?P<end_hour>\d+)'''
+    r'''(:(?P<end_min>\d+))?(?P<end_thing>am|pm)\s+'''
     r'''(?P<timezone>\w+)''')
 assert DESCRIPTION_WHEN_RE
 MONTHS = {
@@ -92,23 +94,27 @@ def parse_description(description):
 	"""Parses a Google Calendar description.
 	
 	Args: 
-		description: a string representing the content tag from a Google calendar feed.
+		description: a string representing the content tag from a Google calendar 
+		feed.
 		
 	Returns: An event description object."""
 	meta, description = description.split("Event Description: ", 1)
 	when = DESCRIPTION_WHEN_RE.search(meta)
 	if not when:
+		print "Couldn't find when in %r" % meta 
 		raise ParseError()
 	when = when.groupdict()
 	start_hour = int(when["start_hour"])
 	if when["start_thing"] == "pm":
 		start_hour += 12
+	start_min = int(when.get("start_min", 0) or 0)
+	end_min = int(when.get("end_min", 0) or 0)
 	start_time = datetime.datetime(
 	    int(when["year"]),
 	    MONTHS[when["month"].lower()],
 	    int(when["day"]),
 	    start_hour,
-	    int(when["start_min"]))
+	    start_min)
 	end_hour = int(when["end_hour"])
 	if when["end_thing"] == "pm":
 		end_hour += 12
@@ -117,7 +123,7 @@ def parse_description(description):
 	    MONTHS[when["month"].lower()],
 	    int(when["day"]),
 	    end_hour,
-	    int(when["end_min"]))
+	    end_min)
 	where = DESCRIPTION_WHERE_RE.search(meta)
 	if not where:
 		raise ParseError()
@@ -152,7 +158,15 @@ def make_event(entry, cal_title):
   id = entry.find(ID_TAG)
   (url, id_key) = id.text.rsplit("/", 1)
   
-  return Event(calendar_title=cal_title, event_id=id_key, event_title=titletag.text, description=contenttag.text)
+  event_description = parse_description(contenttag.text)
+  
+  return Event(calendar_title=cal_title, event_id=id_key,
+  						 event_title=titletag.text, 
+  						 start_time=event_description.start_time,
+  						 end_time=event_description.end_time,
+  						 location=event_description.location,
+  						 status=event_description.status,
+  						 description=event_description.description)
 
 def parse_feed(xml):
 	feed = ET.parse(xml)
