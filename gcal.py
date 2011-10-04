@@ -90,6 +90,25 @@ MONTHS = {
 
 class ParseError(Exception): pass
 
+def parse_dates(when):
+	"""Parses a Google Calendar when annotation."""
+	start_string, end_string = when.split(" to ", 1)
+	if ':' in start_string:
+		start = datetime.datetime.strptime(start_string, "%a %b %d, %Y %I:%M%p")
+	else:
+		start = datetime.datetime.strptime(start_string, "%a %b %d, %Y %I%p")
+	if ':' in end_string and ',' not in end_string:
+		end = datetime.datetime.strptime(end_string, "%I:%M%p")
+	elif ',' not in end_string:
+		end = datetime.datetime.strptime(end_string, "%I%p")
+	elif ':' not in end_string:
+		end = datetime.datetime.strptime(end_string, "%a %b %d, %Y %I%p")
+	else:
+		end = datetime.datetime.strptime(end_string, "%a %b %d, %Y %I:%M%p")
+	end = datetime.datetime(start.year, start.month, start.day, end.hour, 
+													end.minute)
+	return start, end
+
 def parse_description(description):
 	"""Parses a Google Calendar description.
 	
@@ -174,5 +193,3 @@ def parse_feed(xml):
 	entries = feed.findall(ENTRY_TAG)
 	return [make_event(entry, cal_title.text) for entry in entries]
 		
-  	
-parse_feed("calendar.xml")

@@ -71,6 +71,28 @@ PDT<br />
 
 
 class GcalTest(unittest.TestCase):
+	def testParseDateSimple(self):
+		start, end = gcal.parse_dates("Thu Oct 13, 2011 1:30pm to 3:30pm")
+		self.assertEquals(start, datetime.datetime(2011, 10, 13, 13, 30))
+		self.assertEquals(end, datetime.datetime(2011, 10, 13, 15, 30))
+		
+	def testParseDateSimpleNoMin(self):
+		start, end = gcal.parse_dates("Thu Oct 13, 2011 1pm to 3pm")
+		self.assertEquals(start, datetime.datetime(2011, 10, 13, 13))
+		self.assertEquals(end, datetime.datetime(2011, 10, 13, 15))
+		
+	def testParseDateFullNoMin(self):
+		start, end = gcal.parse_dates(
+				"Tue Oct 11, 2011 4pm to Tue Oct 11, 2011 6pm")
+		self.assertEquals(start, datetime.datetime(2011, 10, 11, 16))
+		self.assertEquals(end, datetime.datetime(2011, 10, 11, 18))
+		
+	def testParseDateFullMin(self):
+		start, end = gcal.parse_dates(
+				"Tue Oct 11, 2011 4:30pm to Tue Oct 11, 2011 6:30pm")
+		self.assertEquals(start, datetime.datetime(2011, 10, 11, 16, 30))
+		self.assertEquals(end, datetime.datetime(2011, 10, 11, 18, 30))
+		
 	def testDescription(self):
 		description = gcal.parse_description(description1)
 		expected = gcal.EventDescription(
@@ -83,7 +105,7 @@ class GcalTest(unittest.TestCase):
 Adams Bodomo is African Studies Programme Director at the School of Humanities, University of Hong Kong. He obtained his PhD from the Norwegian University of Science and Technology after obtaining Bachelors and Masters Degrees at the University of Ghana.  Dr Bodomo has given invited lectures on the topic of Africans in China and on general Africa - China relations studies at several leading universities, including Yale University, SOAS, and Peking University. His latest book is entitled: &quot;Africans in China: An Investigation into the African Presence in China and its Consequences on Africa - China Relations&quot; (in press with Cambria Press, NY).""")
 		self.assertEquals(expected, description)
 		
-	def testParse(self):
+	def tastParse(self):
 		events = gcal.parse_feed("calendar.xml")
 		expected = [gcal.Event(calendar_title = "Stanford Humanities Center Events", 
 														event_title = "Adams Bodomo: What is it like to be an African in China?",
