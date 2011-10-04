@@ -72,24 +72,24 @@ PDT<br />
 
 class GcalTest(unittest.TestCase):
 	def testParseDateSimple(self):
-		start, end = gcal.parse_dates("Thu Oct 13, 2011 1:30pm to 3:30pm")
+		start, end = gcal.parse_dates("Thu Oct 13, 2011 1:30pm to 3:30pm PDT")
 		self.assertEquals(start, datetime.datetime(2011, 10, 13, 13, 30))
 		self.assertEquals(end, datetime.datetime(2011, 10, 13, 15, 30))
 		
 	def testParseDateSimpleNoMin(self):
-		start, end = gcal.parse_dates("Thu Oct 13, 2011 1pm to 3pm")
+		start, end = gcal.parse_dates("Thu Oct 13, 2011 1pm to 3pm PDT")
 		self.assertEquals(start, datetime.datetime(2011, 10, 13, 13))
 		self.assertEquals(end, datetime.datetime(2011, 10, 13, 15))
 		
 	def testParseDateFullNoMin(self):
 		start, end = gcal.parse_dates(
-				"Tue Oct 11, 2011 4pm to Tue Oct 11, 2011 6pm")
+				"Tue Oct 11, 2011 4pm to Tue Oct 11, 2011 6pm PDT")
 		self.assertEquals(start, datetime.datetime(2011, 10, 11, 16))
 		self.assertEquals(end, datetime.datetime(2011, 10, 11, 18))
 		
 	def testParseDateFullMin(self):
 		start, end = gcal.parse_dates(
-				"Tue Oct 11, 2011 4:30pm to Tue Oct 11, 2011 6:30pm")
+				"Tue Oct 11, 2011 4:30pm to Tue Oct 11, 2011 6:30pm PDT")
 		self.assertEquals(start, datetime.datetime(2011, 10, 11, 16, 30))
 		self.assertEquals(end, datetime.datetime(2011, 10, 11, 18, 30))
 		
@@ -105,7 +105,7 @@ class GcalTest(unittest.TestCase):
 Adams Bodomo is African Studies Programme Director at the School of Humanities, University of Hong Kong. He obtained his PhD from the Norwegian University of Science and Technology after obtaining Bachelors and Masters Degrees at the University of Ghana.  Dr Bodomo has given invited lectures on the topic of Africans in China and on general Africa - China relations studies at several leading universities, including Yale University, SOAS, and Peking University. His latest book is entitled: &quot;Africans in China: An Investigation into the African Presence in China and its Consequences on Africa - China Relations&quot; (in press with Cambria Press, NY).""")
 		self.assertEquals(expected, description)
 		
-	def tastParse(self):
+	def testParse(self):
 		events = gcal.parse_feed("calendar.xml")
 		expected = [gcal.Event(calendar_title = "Stanford Humanities Center Events", 
 														event_title = "Adams Bodomo: What is it like to be an African in China?",
@@ -114,9 +114,9 @@ Adams Bodomo is African Studies Programme Director at the School of Humanities, 
 														end_time = datetime.datetime(2011, 10, 13, 15, 30),
 														location = "Stanford Humanities Center Board Room",
 														status = "confirmed",
-														description = """Adams Bodomo will look at what has often been termed &amp;quot;Africa&amp;#39;s newest diaspora&amp;quot; by reviewing contemporary Africa - China relations. Closer official interactions between these two areas have led to an increasing number of Africans visiting, settling, and forming communities in China. Bodomo will share the results of a study he undertook with 700 Africans across six main Chinese cities. The research addresses many aspects of everyday life of Africans in China, from why Africans go to China to how they are received by the Chinese state and certainly has theoretical implications for cross-cultural and cross-linguistic studies in an era of globalization.
+														description = """Adams Bodomo will look at what has often been termed &quot;Africa&#39;s newest diaspora&quot; by reviewing contemporary Africa - China relations. Closer official interactions between these two areas have led to an increasing number of Africans visiting, settling, and forming communities in China. Bodomo will share the results of a study he undertook with 700 Africans across six main Chinese cities. The research addresses many aspects of everyday life of Africans in China, from why Africans go to China to how they are received by the Chinese state and certainly has theoretical implications for cross-cultural and cross-linguistic studies in an era of globalization.
 
-Adams Bodomo is African Studies Programme Director at the School of Humanities, University of Hong Kong. He obtained his PhD from the Norwegian University of Science and Technology after obtaining Bachelors and Masters Degrees at the University of Ghana.  Dr Bodomo has given invited lectures on the topic of Africans in China and on general Africa - China relations studies at several leading universities, including Yale University, SOAS, and Peking University. His latest book is entitled: &amp;quot;Africans in China: An Investigation into the African Presence in China and its Consequences on Africa - China Relations&amp;quot; (in press with Cambria Press, NY).""")]
+Adams Bodomo is African Studies Programme Director at the School of Humanities, University of Hong Kong. He obtained his PhD from the Norwegian University of Science and Technology after obtaining Bachelors and Masters Degrees at the University of Ghana.  Dr Bodomo has given invited lectures on the topic of Africans in China and on general Africa - China relations studies at several leading universities, including Yale University, SOAS, and Peking University. His latest book is entitled: &quot;Africans in China: An Investigation into the African Presence in China and its Consequences on Africa - China Relations&quot; (in press with Cambria Press, NY).""")]
 		self.assertEquals(expected[0], events[0])
 	
 	
