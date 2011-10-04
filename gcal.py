@@ -93,18 +93,20 @@ class ParseError(Exception): pass
 def parse_dates(when):
 	"""Parses a Google Calendar when annotation."""
 	start_string, end_string = when.split(" to ", 1)
+	start_format = "%a %b %d, %Y %I"
 	if ':' in start_string:
-		start = datetime.datetime.strptime(start_string, "%a %b %d, %Y %I:%M%p")
-	else:
-		start = datetime.datetime.strptime(start_string, "%a %b %d, %Y %I%p")
-	if ':' in end_string and ',' not in end_string:
-		end = datetime.datetime.strptime(end_string, "%I:%M%p")
-	elif ',' not in end_string:
-		end = datetime.datetime.strptime(end_string, "%I%p")
-	elif ':' not in end_string:
-		end = datetime.datetime.strptime(end_string, "%a %b %d, %Y %I%p")
-	else:
-		end = datetime.datetime.strptime(end_string, "%a %b %d, %Y %I:%M%p")
+		start_format += ":%M"
+	start_format += "%p"
+	
+	end_format = ""
+	if ',' in end_string:
+		end_format += "%a %b %d, %Y "
+	end_format += "%I"
+	if ':' in end_string:
+		end_format += ":%M"
+	end_format += "%p"
+	start = datetime.datetime.strptime(start_string, start_format)
+	end = datetime.datetime.strptime(end_string, end_format)
 	end = datetime.datetime(start.year, start.month, start.day, end.hour, 
 													end.minute)
 	return start, end
