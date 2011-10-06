@@ -46,9 +46,10 @@ class DataStore:
 		already_have_posts = set([row[0] for row in self.c.fetchall()])
 		new_posts = rss_post_ids - already_have_posts
 		logging.warning("new_posts = %r" % new_posts)
-		return
 			
 		for event in events:
+			if event.status == "canceled":
+				continue
 			if event.event_id in already_have_events:
 				continue
 			self.c.execute("insert into events values (?,?,?,?,?,?,?,?)", 
