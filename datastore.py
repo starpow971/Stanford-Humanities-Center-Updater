@@ -46,6 +46,11 @@ class DataStore:
 		already_have_posts = set([row[0] for row in self.c.fetchall()])
 		new_posts = rss_post_ids - already_have_posts
 		logging.warning("new_posts = %r" % new_posts)
+		
+		# NOTE(scottw): We're rethinking this... let's store canceled events
+		# in the database even though they're canceled; let's use a change in
+		# the <updated> tag to indicate that we should update the database,
+		# regardless of the change.
 			
 		for event in events:
 			if event.status == "canceled":
