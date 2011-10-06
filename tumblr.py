@@ -8,6 +8,7 @@
 
 import xml.etree.ElementTree as ET
 import datetime
+import logging
 
 class Post:
 	"""Represents a Tumblr blog post."""
@@ -34,17 +35,17 @@ GUID_TAG = "guid"
 def make_post(item):
 	titletag = item.find(TITLE_TAG)
 	if titletag is None:
-		#todo: log an error
+		logging.warning("No title tag found in %s" % item)
 		return
 		
 	descriptiontag = item.find(DESCRIPTION_TAG)
 	if descriptiontag is None:
-		#todo: log an error
+		logging.warning("No description tag found in %s" % item)
 		return
 			
 	datetag = item.find(DATE_TAG)
 	if datetag is None:
-		#todo: log an error
+		logging.warning("No date tag found in %s" % item)
 		return
 	
 	categorytag = item.find(CATEGORY_TAG)
@@ -55,7 +56,7 @@ def make_post(item):
 	  
 	idtag = item.find(GUID_TAG)
 	if idtag is None:
-		#todo: log an error
+		logging.warning("No guid tag found in %s" % item)
 		return
 			
 	return Post(post_title=titletag.text, 

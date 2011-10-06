@@ -6,6 +6,7 @@
 
 import datetime
 import re
+import logging
 import xml.etree.ElementTree as ET
 
 
@@ -131,8 +132,8 @@ def parse_description(description):
 		description = None
 	when = DESCRIPTION_WHEN_RE.search(meta)
 	if not when:
-		print "Couldn't find when in %r" % meta 
-		raise ParseError()
+		logging.warning("No when: block found in %s" % meta)
+		return
 	when = when.groupdict()
 	when = when["when"].strip()
 	start_time, end_time = parse_dates(when)
@@ -144,7 +145,8 @@ def parse_description(description):
 		location = None
 	status = DESCRIPTION_STATUS_RE.search(meta)
 	if not status:
-		raise ParseError()
+		logging.warning("No when: block found in %s" % meta)
+		return
 	status = status.groupdict()
 	event_status = status["status"].strip()
 	return EventDescription(start_time=start_time, end_time=end_time, 
@@ -155,18 +157,18 @@ def parse_description(description):
 def make_event(entry, cal_title):
   titletag = entry.find(TITLE_TAG)
   if titletag is None:
-    #todo: log an error
-    return
+		logging.warning("No title tag found in %s" % entry)
+		return
 
   contenttag = entry.find(CONTENT_TAG)
   if contenttag is None:
-    #todo: log an error
-    return
+		logging.warning("No content tag found in %s" % entry)
+		return
     
   idtag = entry.find(ID_TAG)
   if idtag is None:
-  	#todo: log an error
-  	return
+		logging.warning("No id tag found in %s" % entry)
+		return
   	
   id = entry.find(ID_TAG)
   (url, id_key) = id.text.rsplit("/", 1)
