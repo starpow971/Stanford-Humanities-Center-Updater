@@ -36,8 +36,8 @@ class DataStore:
 								 			ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
 								 			event.location, event.description))
 		for post in news:
-			self.c.execute("insert into news values (?, ?, ?, ?)",
-										 (post.post_title, ToTimestamp(post.post_date), post.post_content,
+			self.c.execute("insert into news values (?, ?, ?, ?, ?)",
+										 (post.post_id, post.post_title, ToTimestamp(post.post_date), post.post_content,
 										  post.post_category))
 								
 	def save(self):

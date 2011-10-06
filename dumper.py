@@ -25,8 +25,9 @@ for event in events:
 						 ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
 						 event.location, event.description))
 for post in news:
-	c.execute("insert into news values (?, ?, ?, ?)",
-						(post.post_title, ToTimestamp(post.post_date), post.post_content, post.post_category))
+	c.execute("insert into news values (?, ?, ?, ?, ?)",
+						(post.post_id, post.post_title, ToTimestamp(post.post_date), post.post_content, 
+						 post.post_category))
 						
 conn.commit()
 c.close()

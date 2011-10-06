@@ -2,4 +2,5 @@ create table events(id, calendar_title TEXT, event_title TEXT, start_time INTEGE
                     location TEXT, status TEXT, description TEXT);
                     
                     
-create table news(post_title TEXT, post_date INTEGER, post_content TEXT, post_category TEXT);
+create table news(id INTEGER, post_title TEXT, post_date INTEGER, post_content TEXT, 
+									post_category TEXT);

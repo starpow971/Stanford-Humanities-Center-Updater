@@ -9,25 +9,26 @@
 import xml.etree.ElementTree as ET
 import datetime
 
-class Blog:
+class Post:
 	"""Represents a Tumblr blog post."""
 	
-	def __init__(self, post_title="", post_date="", post_content="", post_category=""):
-	#todo: fix ASCII encoding problem.
+	def __init__(self, post_title="", post_date="", post_content="", post_category="", post_id=0):
 		self.post_title = post_title
 		self.post_date = post_date
 		self.post_content = post_content
 		self.post_category = post_category
+		self.post_id = post_id
 		
 	def __repr__(self):
-		return "<title: '%r' date: '%r' post: '%r' category: '%r'>" % (
-			self.post_title, self.post_date, self.post_content, self.post_category)
+		return "<title: '%r' date: '%r' post: '%r' category: '%r' id: '%r'>" % (
+			self.post_title, self.post_date, self.post_content, self.post_category, self.post_id)
 			
 ITEM_TAG = "channel/item"
 TITLE_TAG = "title"
 DESCRIPTION_TAG = "description"
 DATE_TAG = "pubDate"
 CATEGORY_TAG = "category"
+GUID_TAG = "guid"
 
 
 def make_post(item):
@@ -51,10 +52,16 @@ def make_post(item):
 	  category = None
 	else:
 	  category = categorytag.text
+	  
+	idtag = item.find(GUID_TAG)
+	if idtag is None:
+		#todo: log an error
+		return
 			
-	return Blog(post_title=titletag.text, 
+	return Post(post_title=titletag.text, 
 							post_date=parse_time(datetag.text.encode('ascii', 'ignore')),
-	            post_content=descriptiontag.text, post_category=category)
+	            post_content=descriptiontag.text, post_category=category,
+	            post_id=int(idtag.text.rsplit("/", 1)[1]))
 
 def parse_time(s):
 	timestr, _ = s.rsplit(' ', 1)
@@ -66,4 +73,4 @@ def parse_rss(xml):
 	return [make_post(item) for item in items]
 		
 #import pdb; pdb.set_trace()
-# print parse_rss("tumblr.xml")
+#print parse_rss("tumblr.xml")
