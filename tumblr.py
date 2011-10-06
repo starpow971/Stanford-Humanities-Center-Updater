@@ -7,6 +7,7 @@
 # produce useful blog objects.
 
 import xml.etree.ElementTree as ET
+import datetime
 
 class Blog:
 	"""Represents a Tumblr blog post."""
@@ -51,14 +52,18 @@ def make_post(item):
 	else:
 	  category = categorytag.text
 			
-	return Blog(post_title=titletag.text, post_date=datetag.text, 
+	return Blog(post_title=titletag.text, 
+							post_date=parse_time(datetag.text.encode('ascii', 'ignore')),
 	            post_content=descriptiontag.text, post_category=category)
-	
+
+def parse_time(s):
+	timestr, _ = s.rsplit(' ', 1)
+	return datetime.datetime.strptime(timestr, "%a, %d %b %Y %H:%M:%S")
+
 def parse_rss(xml):
 	rss = ET.parse(xml)
 	items = rss.findall(ITEM_TAG)
-	for item in items:
-		print make_post(item)
+	return [make_post(item) for item in items]
 		
 #import pdb; pdb.set_trace()
-parse_rss("tumblr.xml")
+# print parse_rss("tumblr.xml")

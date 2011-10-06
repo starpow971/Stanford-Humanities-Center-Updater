@@ -110,8 +110,8 @@ def parse_dates(when):
 	if ':' in end_string:
 		end_format += ":%M"
 	end_format += "%p %Z"
-	start = datetime.datetime.strptime(start_string, start_format)
-	end = datetime.datetime.strptime(end_string, end_format)
+	start = datetime.datetime.strptime(start_string.encode('ascii', 'ignore'), start_format)
+	end = datetime.datetime.strptime(end_string.encode('ascii', 'ignore'), end_format)
 	end = datetime.datetime(start.year, start.month, start.day, end.hour, 
 													end.minute)
 	return start, end
