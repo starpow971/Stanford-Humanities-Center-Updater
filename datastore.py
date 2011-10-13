@@ -30,12 +30,12 @@ class DataStore:
       events: A list of gcal.Event
       news: A list of tumblr.Post"""
       
-    feed_event_ids = set([e.event_id for e in events])
+    feed_events = dict([(e.event_id, e.updated) for e in events])
     query = ("select id from events where id in (" +
-             ", ".join([repr(e) for e in feed_event_ids]) + ")")
+             ", ".join([repr(e) for e in feed_events.iterkeys()]) + ")")
     self.c.execute(query)
     already_have_events = set([row[0] for row in self.c.fetchall()])
-    new_events = feed_event_ids - already_have_events
+    new_events = set(feed_events.keys()) - already_have_events
     logging.warning("new_events = %r" % new_events)
     
     
