@@ -31,12 +31,11 @@ class DataStore:
       news: A list of tumblr.Post"""
       
     feed_events = dict([(e.event_id, e.updated) for e in events])
-    query = ("select id from events where id in (" +
+    query = ("select id, updated from events where id in (" +
              ", ".join([repr(e) for e in feed_events.iterkeys()]) + ")")
     self.c.execute(query)
-    already_have_events = set([row[0] for row in self.c.fetchall()])
-    new_events = set(feed_events.keys()) - already_have_events
-    logging.warning("new_events = %r" % new_events)
+    already_have_events = dict(self.c.fetchall())
+    new_events = set(feed_events.keys()) - set(already_have_events.keys())
     
     
     rss_post_ids = set([p.post_id for p in news])
@@ -47,18 +46,35 @@ class DataStore:
     new_posts = rss_post_ids - already_have_posts
     logging.warning("new_posts = %r" % new_posts)
     
-    # NOTE(scottw): We're rethinking this... let's store canceled events
-    # in the database even though they're canceled; let's use a change in
-    # the <updated> tag to indicate that we should update the database,
-    # regardless of the change.
+    # NOTE(scottrw): There are four cases to consider:
+    # 1. old event not in feed. No action required from us, do nothing.
+    # 2. new event. Feed event id is not in database. Insert event into database.
+    # 3. unmodified event. Feed event id is in database, and updated fields are equal. Do nothing.
+    # 4. modified event. Feed event id is in database, but updated fields are unequal. Update database.
       
     for event in events:
       if event.event_id in already_have_events:
-        continue
-      self.c.execute("insert into events values (?,?,?,?,?,?,?,?,?)", 
-                     (event.event_id, event.updated, event.calendar_title, event.event_title,
-                      ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
-                      event.status, event.description))
+        # Hm, event id is present in the feed and the database. Could be case 3 OR 4.
+        if already_have_events[event.event_id] == event.updated:
+          # Aha, an unmodified event!
+          logging.warning("Not modifying event %s" % event.event_id)
+          continue
+        else:
+          # Must be a modified event... need to update database.
+          logging.warning("Updating event %s" % event.event_id)
+          self.c.execute("update events set updated=?, calendar_title=?, event_title=?, "
+                         "start_time=?, end_time=?, location=?, status=?, description=? "
+                         "where id=?",
+                         (event.updated, event.calendar_title, event.event_title,
+                          ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
+                           event.status, event.description, event.event_id))
+      else:
+        # Must be a new event!
+        logging.warning("New event %s" % event.event_id)
+        self.c.execute("insert into events values (?,?,?,?,?,?,?,?,?)", 
+                       (event.event_id, event.updated, event.calendar_title, event.event_title,
+                        ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
+                        event.status, event.description))
     for post in news:
       if post.post_id in already_have_posts:
         continue
