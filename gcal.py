@@ -15,7 +15,7 @@ class Event:
 	
 	def __init__(self, calendar_title="", event_title="", event_id="",
 	             start_time=None, end_time=None, location="", status="", 
-	             description=""):
+	             description="", updated=""):
 		self.calendar_title = calendar_title
 		self.event_title = event_title
 		self.event_id = event_id
@@ -24,6 +24,7 @@ class Event:
 		self.location = location
 		self.status = status  # like "confirmed" or something.
 		self.description = description
+		self.updated = updated
 		
 	def __repr__(self):
 		return ("\n<calendar_title: %(calendar_title)r\n "
@@ -33,7 +34,8 @@ class Event:
 		        "end_time: %(end_time)r\n "
 		        "location: %(location)r\n "
 		        "status: %(status)r\n "
-		        "description: %(description)r"
+		        "description: %(description)r\n"
+		        "updated: %(updated)r"
 		        ">") % {
 		      		'calendar_title': self.calendar_title,
 		      		'event_title': self.event_title,
@@ -42,7 +44,8 @@ class Event:
 		      		'end_time': self.end_time,
 		      		'location': self.location,
 		      		'status': self.status,
-		      		'description': self.description[:40]}
+		      		'description': self.description[:40],
+		      		'updated': self.updated}
 				
 	def __eq__(self, other):
 		return (
@@ -53,7 +56,8 @@ class Event:
 			self.end_time == other.end_time and
 			self.location == other.location and
 			self.status == other.status and
-			self.description == other.description)
+			self.description == other.description and
+			self.updated == other.updated)
 				
 
 class EventDescription:
@@ -86,6 +90,7 @@ ENTRY_TAG = NAMESPACE + "entry"
 TITLE_TAG = NAMESPACE + "title"
 CONTENT_TAG = NAMESPACE + "content"
 ID_TAG = NAMESPACE + "id"
+UPDATED_TAG = NAMESPACE + "updated"
 
 DESCRIPTION_STATUS_RE = re.compile(r'''Event Status:(?P<status>(\s+\w+)+)''')
 assert DESCRIPTION_STATUS_RE
@@ -155,27 +160,33 @@ def parse_description(description):
 	    
 
 def make_event(entry, cal_title):
-  titletag = entry.find(TITLE_TAG)
-  if titletag is None:
+	titletag = entry.find(TITLE_TAG)
+	if titletag is None:
 		logging.warning("No title tag found in %s" % entry)
 		return
 
-  contenttag = entry.find(CONTENT_TAG)
-  if contenttag is None:
+	contenttag = entry.find(CONTENT_TAG)
+	if contenttag is None:
 		logging.warning("No content tag found in %s" % entry)
 		return
-    
-  idtag = entry.find(ID_TAG)
-  if idtag is None:
+		
+	idtag = entry.find(ID_TAG)
+	if idtag is None:
 		logging.warning("No id tag found in %s" % entry)
 		return
-  	
-  id = entry.find(ID_TAG)
-  (url, id_key) = id.text.rsplit("/", 1)
+		
+	id = entry.find(ID_TAG)
+	(url, id_key) = id.text.rsplit("/", 1)
+		
+	updatedtag = entry.find(UPDATED_TAG)
+	if updatedtag is None:
+		logging.warning("No updated tag found in %s" % entry)
+		return
   
-  event_description = parse_description(contenttag.text)
+	event_description = parse_description(contenttag.text)
   
-  return Event(calendar_title=cal_title, event_id=id_key,
+	return Event(calendar_title=cal_title, event_id=id_key,
+  						 updated=updatedtag.text,
   						 event_title=titletag.text, 
   						 start_time=event_description.start_time,
   						 end_time=event_description.end_time,
