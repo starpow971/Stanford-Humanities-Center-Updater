@@ -4,9 +4,26 @@
 # Description: A shim over the filesystem so we can avoid clobbering files we
 # don't own.
 
+import os
+
 class FileManager:
+  def __init__(self, path_checker=os.path.exists):
+    self.check_path = path_checker
+
+  def _ArchivedFile(self, filename):
+    dir, base = os.path.split(filename)
+    if dir:
+      return "%s/.%s.bak" % (dir, base)
+    else:
+      return ".%s.bak" % base
+
   def moveouttheway(self, filename):
-    """Makes sure a template file won't be clobbered."""
+    """Makes sure a template file won't be clobbered.
+    
+    If a file named .<filename>.bak exists, this method has no effect. Otherwise
+    it moves the named file.
+    """
+    # if self.check_path(
     pass
 
   def read(self, filename):
