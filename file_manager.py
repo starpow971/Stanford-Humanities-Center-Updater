@@ -58,15 +58,20 @@ class FileManager:
 
   def show_diff(self):
     """Shows changes you have made to the filesystem."""
+    summary = ""
     diffs = ""
     for filename, content in self.files.iteritems():
+      if not self.check_path(self.archives.get(filename, filename)):
+        summary += "A %s\n" % filename
+        continue
       original_content = self.read_file(filename)
       if content != original_content:
+        summary += "M %s\n" % filename
         diffs += ''.join(difflib.unified_diff(
                               [l + '\n' for l in original_content.split('\n')],
                               [l + '\n' for l in content.split('\n')],
                               filename, filename))
-    return diffs
+    return summary + diffs
 
   def commit(self):
     """Writes your changes to disk."""

@@ -60,14 +60,22 @@ class FileManagerTest(unittest.TestCase):
     self.assertEquals((".foo.bak",), r.args)
 
   def testDiff(self):
-    fm = file_manager.FileManager(reader=lambda fn: fn + '-contents')
+    fm = file_manager.FileManager(reader=lambda fn: fn + '-contents',
+                                  path_checker=lambda fn: True)
     self.assertEquals("foo-contents", fm.read("foo"))
     fm.save("foo", "clobbered!")
-    expected = ("--- foo \n"
+    expected = ("M foo\n"
+                "--- foo \n"
                 "+++ foo \n"
                 "@@ -1,1 +1,1 @@\n"
                 "-foo-contents\n"
                 "+clobbered!\n")
+    self.assertEquals(expected, fm.show_diff())
+
+  def testDiffNew(self):
+    fm = file_manager.FileManager(path_checker=lambda fn: False)
+    fm.save("foo", "clobbered!")
+    expected = "A foo\n"
     self.assertEquals(expected, fm.show_diff())
 
 
