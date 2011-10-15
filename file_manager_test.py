@@ -12,10 +12,10 @@ import file_manager
 class FileManagerTest(unittest.TestCase):
   def testMakeArchivedFilename(self):
     fm = file_manager.FileManager()
-    self.assertEquals(".foo.bak", fm._ArchivedFile("foo"))
-    self.assertEquals("bar/.foo.bak", fm._ArchivedFile("bar/foo"))
-    self.assertEquals("/bar/.foo.bak", fm._ArchivedFile("/bar/foo"))
-    self.assertEquals(".foo.html.bak", fm._ArchivedFile("foo.html"))
+    self.assertEquals(".foo.bak", fm._archived_file("foo"))
+    self.assertEquals("bar/.foo.bak", fm._archived_file("bar/foo"))
+    self.assertEquals("/bar/.foo.bak", fm._archived_file("/bar/foo"))
+    self.assertEquals(".foo.html.bak", fm._archived_file("foo.html"))
 
   def testArchiveAlreadyArchived(self):
     called_rename = False
@@ -24,7 +24,7 @@ class FileManagerTest(unittest.TestCase):
 
     fm = file_manager.FileManager(path_checker=lambda fn: True,
                                   file_mover=CallRename)
-    fm.Archive("foo")
+    fm.archive("foo")
     self.assertFalse(called_rename)
 
   def testArchiveMovesStuff(self):
@@ -34,7 +34,7 @@ class FileManagerTest(unittest.TestCase):
 
     fm = file_manager.FileManager(path_checker=lambda fn: False,
                                   file_mover=CallRename)
-    fm.Archive("foo")
+    fm.archive("foo")
     self.assertEquals(("foo", ".foo.bak"), rename_args['foo'])
 
   class RecordingReader:
@@ -55,7 +55,7 @@ class FileManagerTest(unittest.TestCase):
   def testReadArchived(self):
     r = self.RecordingReader("content")
     fm = file_manager.FileManager(path_checker=lambda fn: True, reader=r.read)
-    fm.Archive("foo")
+    fm.archive("foo")
     self.assertEquals("content", fm.read("foo"))
     self.assertEquals((".foo.bak",), r.args)
 

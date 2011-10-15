@@ -24,7 +24,7 @@ class FileManager:
     self.archives = {}
     self.files = {}
 
-  def _ArchivedFile(self, filename):
+  def _archived_file(self, filename):
     """Given a regular filename, returns the archived name."""
     dir, base = os.path.split(filename)
     if dir:
@@ -32,13 +32,13 @@ class FileManager:
     else:
       return ".%s.bak" % base
 
-  def Archive(self, filename):
+  def archive(self, filename):
     """Makes sure a template file won't be clobbered.
     
     If a file named .<filename>.bak exists, this method has no effect. Otherwise
     it moves the named file.
     """
-    archived_filename = self._ArchivedFile(filename)
+    archived_filename = self._archived_file(filename)
     self.archives[filename] = archived_filename
     if self.check_path(archived_filename):
       # File was already moved!
@@ -48,7 +48,7 @@ class FileManager:
   def read(self, filename):
     """Reads a file from the filesystem.
 
-    Why not just use read? Well, moveouttheway might have moved it!"""
+    Why not just use read? Well, Archive might have moved it!"""
     return self.read_file(self.archives.get(filename, filename))
 
   def save(self, filename, contents):
