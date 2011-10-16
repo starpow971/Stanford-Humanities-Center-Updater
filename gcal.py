@@ -15,7 +15,7 @@ class Event:
 	
 	def __init__(self, calendar_title="", event_title="", event_id="",
 	             start_time=None, end_time=None, location="", status="", 
-	             description="", updated=""):
+	             description="", updated="", is_all_day=False):
 		self.calendar_title = calendar_title
 		self.event_title = event_title
 		self.event_id = event_id
@@ -25,12 +25,14 @@ class Event:
 		self.status = status  # like "confirmed" or something.
 		self.description = description
 		self.updated = updated
+		self.is_all_day = is_all_day  # for events that have no real times
 		
 	def __repr__(self):
 		return ("\n<calendar_title: %(calendar_title)r\n "
 		        "event_title: %(event_title)r\n "
 		        "event_id: %(event_id)r\n "
 		        "start_time: %(start_time)r\n "
+		        "is_all_day: %(is_all_day)r\n "
 		        "end_time: %(end_time)r\n "
 		        "location: %(location)r\n "
 		        "status: %(status)r\n "
@@ -41,6 +43,7 @@ class Event:
 		      		'event_title': self.event_title,
 		      		'event_id': self.event_id,
 		      		'start_time': self.start_time,
+		      		'is_all_day': self.is_all_day,
 		      		'end_time': self.end_time,
 		      		'location': self.location,
 		      		'status': self.status,
@@ -57,15 +60,17 @@ class Event:
 			self.location == other.location and
 			self.status == other.status and
 			self.description == other.description and
-			self.updated == other.updated)
+			self.updated == other.updated and
+			self.is_all_day == other.is_all_day)
 				
 
 class EventDescription:
 	"""Represents data embedded in a Google Calendar description."""
 	
 	def __init__(self, start_time=None, end_time=None, location="", status="", 
-							 description=""):
+							 description="", is_all_day=False):
 		self.start_time = start_time #A datetime.
+		self.is_all_day = is_all_day
 		self.end_time = end_time #A datetime.
 		self.location = location
 		self.status = status
@@ -73,16 +78,17 @@ class EventDescription:
 		
 	def __repr__(self):
 		return ("<start time: %r end time: %r location: %s status: %s "
-						"description: %s>") % (
+						"description: %s is_all_day: %r>") % (
 		    self.start_time, self.end_time, self.location, self.status, 
-		    self.description)
+		    self.description, self.is_all_day)
 		
 	def __eq__(self, other):
 		return (self.start_time == other.start_time and 
 						self.end_time == other.end_time and
 						self.location == other.location and
 						self.status == other.status and
-						self.description == other.description)
+						self.description == other.description and
+						self.is_all_day == other.is_all_day)
 		
 
 NAMESPACE = "{http://www.w3.org/2005/Atom}"
@@ -103,24 +109,39 @@ class ParseError(Exception): pass
 
 def parse_dates(when):
 	"""Parses a Google Calendar when annotation."""
-	start_string, end_string = when.split(" to ", 1)
-	start_format = "%a %b %d, %Y %I"
+	is_all_day = " to " not in when
+	if is_all_day:
+		start_string = when
+		end_string = when
+	else:
+		start_string, end_string = when.split(" to ", 1)
+		
+	start_format = "%a %b %d, %Y"
+	if not is_all_day:
+		start_format += " %I"
 	if ':' in start_string:
 		start_format += ":%M"
-	start_format += "%p"
+	if not is_all_day:
+	  start_format += "%p"
 	
-	end_format = ""
-	if ',' in end_string:
-		end_format += "%a %b %d, %Y "
-	end_format += "%I"
-	if ':' in end_string:
-		end_format += ":%M"
-	end_format += "%p %Z"
-	start = datetime.datetime.strptime(start_string.encode('ascii', 'ignore'), start_format)
-	end = datetime.datetime.strptime(end_string.encode('ascii', 'ignore'), end_format)
+	if is_all_day:
+		end_format = start_format
+	else:
+		end_format = ""
+		if ',' in end_string:
+			end_format += "%a %b %d, %Y "
+		end_format += "%I"
+		if ':' in end_string:
+			end_format += ":%M"
+		end_format += "%p %Z"
+		
+	start = datetime.datetime.strptime(start_string.encode('ascii', 'ignore'), 
+																		 start_format)
+	end = datetime.datetime.strptime(end_string.encode('ascii', 'ignore'), 
+																	 end_format)
 	end = datetime.datetime(start.year, start.month, start.day, end.hour, 
 													end.minute)
-	return start, end
+	return start, end, is_all_day
 
 def parse_description(description):
 	"""Parses a Google Calendar description.
@@ -141,7 +162,7 @@ def parse_description(description):
 		return
 	when = when.groupdict()
 	when = when["when"].strip()
-	start_time, end_time = parse_dates(when)
+	start_time, end_time, is_all_day = parse_dates(when)
 	where = DESCRIPTION_WHERE_RE.search(meta)
 	if where:
 		where = where.groupdict()
@@ -155,6 +176,7 @@ def parse_description(description):
 	status = status.groupdict()
 	event_status = status["status"].strip()
 	return EventDescription(start_time=start_time, end_time=end_time, 
+													is_all_day=is_all_day,
 													location=location, status=event_status, 
 													description=description)
 	    
@@ -189,6 +211,7 @@ def make_event(entry, cal_title):
   						 updated=updatedtag.text,
   						 event_title=titletag.text, 
   						 start_time=event_description.start_time,
+  						 is_all_day=event_description.is_all_day,
   						 end_time=event_description.end_time,
   						 location=event_description.location,
   						 status=event_description.status,

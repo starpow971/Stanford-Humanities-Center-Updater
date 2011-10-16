@@ -3,6 +3,7 @@
 # Author: Christine Williams <christine.bennett.williams@gmail.com>
 # Description: Dump events from calendar and tumblr feeds straight into database.
 
+import datetime
 import logging
 import sqlite3
 import time
@@ -59,24 +60,25 @@ class DataStore:
         # Hm, event id is present in the feed and the database. Could be case 3 OR 4.
         if already_have_events[event.event_id] == event.updated:
           # Aha, an unmodified event!
-          logging.warning("Not modifying event %s" % event.event_id)
+          # logging.warning("Not modifying event %s" % event.event_id)
           continue
         else:
           # Must be a modified event... need to update database.
           logging.warning("Updating event %s" % event.event_id)
           self.c.execute("update events set updated=?, calendar_title=?, event_title=?, "
-                         "start_time=?, end_time=?, location=?, status=?, description=? "
+                         "start_time=?, end_time=?, location=?, status=?, description=?, "
+                         "is_all_day=? "
                          "where id=?",
                          (event.updated, event.calendar_title, event.event_title,
                           ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
-                           event.status, event.description, event.event_id))
+                           event.status, event.description, int(event.is_all_day), event.event_id))
       else:
         # Must be a new event!
         logging.warning("New event %s" % event.event_id)
-        self.c.execute("insert into events values (?,?,?,?,?,?,?,?,?)", 
+        self.c.execute("insert into events values (?,?,?,?,?,?,?,?,?,?)", 
                        (event.event_id, event.updated, event.calendar_title, event.event_title,
                         ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
-                        event.status, event.description))
+                        event.status, event.description, int(event.is_all_day)))
     for post in news:
       if post.post_id in already_have_posts:
         continue
@@ -86,13 +88,17 @@ class DataStore:
                       
   def GetEventsInRange(self, start_date, end_date):
     """Returns a list of events in the date range, inclusive."""
-    self.c.execute("select * from events where start_time >= ? and start_time <= ?",
+    self.c.execute("select * from events where start_time >= ? and start_time <= ? order by start_time",
                     (ToTimestamp(start_date), ToTimestamp(end_date)))
     print ToTimestamp(start_date), ToTimestamp(end_date)
     for row in self.c:
-      yield gcal.Event(event_id=row[0], updated=row[1], calendar_title=row[2],
-                       event_title=row[3], start_time=row[4], end_time=row[5], 
-                       location=row[6] or "", status=row[7], description=row[8] or "")
+      e = gcal.Event(event_id=row[0], updated=row[1], calendar_title=row[2],
+                     event_title=row[3], start_time=datetime.datetime.fromtimestamp(row[4]),
+                     end_time=datetime.datetime.fromtimestamp(row[5]), 
+                     location=row[6] or "", status=row[7], description=row[8] or "",
+                     is_all_day=bool(row[9]))
+      if e.status != "canceled":
+        yield e
                 
   def save(self):
     """Commits pending changes to the database."""

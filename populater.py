@@ -3,6 +3,8 @@
 # Author: Christine Williams <christine.bennett.williams@gmail.com>
 # Description: Pulls events from database and writes them to disc.
 
+
+from Cheetah.Template import Template
 import datetime
 
 import datastore
@@ -16,5 +18,5 @@ end_date = start_date + datetime.timedelta(31)
 
 events = ds.GetEventsInRange(start_date, end_date)
 
-for event in events:
-  print event
+t = Template(file="calendar-landing-page.tmpl", searchList=[{"events": events}])
+print t
