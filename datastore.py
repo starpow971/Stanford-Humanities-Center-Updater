@@ -47,7 +47,6 @@ class DataStore:
     self.c.execute(query)
     already_have_posts = set([row[0] for row in self.c.fetchall()])
     new_posts = rss_post_ids - already_have_posts
-    logging.warning("new_posts = %r" % new_posts)
     
     # NOTE(scottrw): There are four cases to consider:
     # 1. old event not in feed. No action required from us, do nothing.
