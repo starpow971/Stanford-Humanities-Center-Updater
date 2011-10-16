@@ -27,7 +27,7 @@ class FileManager:
       return os.path.exists(path)
 
     def MakeDir(self, path):
-      return os.mkdir(path)
+      return os.mkdirs(path)
 
   def __init__(self, env=Env()):
     self.env = env
