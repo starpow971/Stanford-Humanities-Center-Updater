@@ -7,6 +7,8 @@ import logging
 import sqlite3
 import time
 
+import gcal
+
 class DataStore:
   """DataStore manages the SQLite3 connection."""
   
@@ -81,6 +83,16 @@ class DataStore:
       self.c.execute("insert into news values (?, ?, ?, ?, ?)",
                      (post.post_id, post.post_title, ToTimestamp(post.post_date), post.post_content,
                       post.post_category))
+                      
+  def GetEventsInRange(self, start_date, end_date):
+    """Returns a list of events in the date range, inclusive."""
+    self.c.execute("select * from events where start_time >= ? and start_time <= ?",
+                    (ToTimestamp(start_date), ToTimestamp(end_date)))
+    print ToTimestamp(start_date), ToTimestamp(end_date)
+    for row in self.c:
+      yield gcal.Event(event_id=row[0], updated=row[1], calendar_title=row[2],
+                       event_title=row[3], start_time=row[4], end_time=row[5], 
+                       location=row[6] or "", status=row[7], description=row[8] or "")
                 
   def save(self):
     """Commits pending changes to the database."""
