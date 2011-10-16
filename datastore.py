@@ -90,7 +90,6 @@ class DataStore:
     """Returns a list of events in the date range, inclusive."""
     self.c.execute("select * from events where start_time >= ? and start_time <= ? order by start_time",
                     (ToTimestamp(start_date), ToTimestamp(end_date)))
-    print ToTimestamp(start_date), ToTimestamp(end_date)
     for row in self.c:
       e = gcal.Event(event_id=row[0], updated=row[1], calendar_title=row[2],
                      event_title=row[3], start_time=datetime.datetime.fromtimestamp(row[4]),

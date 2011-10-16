@@ -29,8 +29,9 @@ class FileManager:
     def MakeDir(self, path):
       return os.mkdirs(path)
 
-  def __init__(self, env=Env()):
+  def __init__(self, root_dir="./", env=Env()):
     self.env = env
+    self.root_dir = root_dir
     self.archives = {}
     self.files = {}
 

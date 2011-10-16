@@ -19,4 +19,5 @@ end_date = start_date + datetime.timedelta(31)
 events = ds.GetEventsInRange(start_date, end_date)
 
 t = Template(file="calendar-landing-page.tmpl", searchList=[{"events": events}])
-print t
+with open("/Library/Server/Web/Data/Sites/Default/events/calendar/index.html", "w") as f:
+  f.write(str(t))
