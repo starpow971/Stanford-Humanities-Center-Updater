@@ -18,7 +18,16 @@ calendar_ids = {
   "context dependence": "78v8iihj2d3f0h6l6260qoric8%40group.calendar.google.com",
   "ethics politics": "61bjb0uj27vtoq2ueo4fcv609g%40group.calendar.google.com",
   "gnp": "1o8jo65ni7npb02l2kfvi9sibg%40group.calendar.google.com",
-  "interdisciplinary approaches": "bfvev6s9081o7c7vodtp4snbj8@group.calendar.google.com"
+  "interdisciplinary approaches": "bfvev6s9081o7c7vodtp4snbj8@group.calendar.google.com",
+  "modern middle east": "5e85ft4r0lkrmkj1lqic1dsejk@group.calendar.google.com",
+  "mythos and logos": "fosbsf1alk8nc6baua1vkimlao@group.calendar.google.com",
+  "prg": "fqm0j67ksqueq5lo100pq2c13c@group.calendar.google.com",
+  "ser": "0a4j0vi87dlle6bjjkamr06tfs@group.calendar.google.com",
+  "transamerican studies": "2l6d4g9kgomok6o311infg28c4@group.calendar.google.com",
+  "vvlar": "db83bnp7ps0oq07t12qjujgsdc@group.calendar.google.com",
+  "visualizing complexity": "sal6d7mo9rj3l9knn8ot9l69rg@group.calendar.google.com",
+  "working group on the novel": "5a7sgmn064v1jsif3uln6lqf3s@group.calendar.google.com",
+  "poetics": "ht02jaieajfqdkqogpcsso40cs@group.calendar.google.com"
 }
 
 events = []
