@@ -7,20 +7,30 @@
 import difflib
 import os
 
-def _ReadFile(filename):
-  with open(filename) as f:
-    return f.read()
-
-def _WriteFile(filename, contents):
-  with open(filename, 'w') as f:
-    f.write(contents)
-
 class FileManager:
-  def __init__(self, path_checker=os.path.exists, file_mover=os.rename,
-               reader=_ReadFile):
-    self.check_path = path_checker
-    self.move_file = file_mover
-    self.read_file = reader
+  """Represents pending changes to the filesystem."""
+
+  class Env:
+    """Abstracts away filesystem operations to allow easy testing."""
+    def ReadFile(self, filename):
+      with open(filename) as f:
+        return f.read()
+
+    def WriteFile(self, filename, contents):
+      with open(filename, 'w') as f:
+        f.write(contents)
+
+    def MoveFile(self, src, dest):
+      return os.rename(src, dest)
+
+    def CheckPath(self, path):
+      return os.path.exists(path)
+
+    def MakeDir(self, path):
+      return os.mkdir(path)
+
+  def __init__(self, env=Env()):
+    self.env = env
     self.archives = {}
     self.files = {}
 
@@ -40,16 +50,16 @@ class FileManager:
     """
     archived_filename = self._archived_file(filename)
     self.archives[filename] = archived_filename
-    if self.check_path(archived_filename):
+    if self.env.CheckPath(archived_filename):
       # File was already moved!
       return
-    self.move_file(filename, archived_filename)
+    self.env.MoveFile(filename, archived_filename)
 
   def read(self, filename):
     """Reads a file from the filesystem.
 
     Why not just use read? Well, Archive might have moved it!"""
-    return self.read_file(self.archives.get(filename, filename))
+    return self.env.ReadFile(self.archives.get(filename, filename))
 
   def save(self, filename, contents):
     """Saves a file. Doesn't touch the filesystem."""
@@ -60,11 +70,11 @@ class FileManager:
     """Shows changes you have made to the filesystem."""
     summary = ""
     diffs = ""
-    for filename, content in self.files.iteritems():
-      if not self.check_path(self.archives.get(filename, filename)):
+    for filename, content in sorted(self.files.iteritems()):
+      if not self.env.CheckPath(self.archives.get(filename, filename)):
         summary += "A %s\n" % filename
         continue
-      original_content = self.read_file(filename)
+      original_content = self.env.ReadFile(filename)
       if content != original_content:
         summary += "M %s\n" % filename
         diffs += ''.join(difflib.unified_diff(
@@ -75,5 +85,13 @@ class FileManager:
 
   def commit(self):
     """Writes your changes to disk."""
+    dirs = set([os.path.dirname(file) for file in self.files.iterkeys()])
+    if "" in dirs:
+      # path.dirname is silly and returns "" for the current directory.
+      dirs.remove("")
+      dirs.add(".")
+    for dir in dirs:
+      if not self.env.CheckPath(dir):
+        self.env.MakeDir(dir)
     for filename, content in self.files.iteritems():
-      self.write_file(filename, content)
+      self.env.WriteFile(filename, content)

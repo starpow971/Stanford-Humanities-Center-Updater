@@ -18,65 +18,156 @@ class FileManagerTest(unittest.TestCase):
     self.assertEquals(".foo.html.bak", fm._archived_file("foo.html"))
 
   def testArchiveAlreadyArchived(self):
-    called_rename = False
-    def CallRename(src, dest):
-      called_rename = True
+    class MockEnv:
+      def __init__(self):
+        self.called_rename = False
 
-    fm = file_manager.FileManager(path_checker=lambda fn: True,
-                                  file_mover=CallRename)
+      def CheckPath(self, path):
+        # Pretend we've already archived this file
+        assert path == ".foo.bak"
+        return True
+
+      def RenameFile(self, src, dest):
+        self.called_rename = True
+
+    env = MockEnv()
+    fm = file_manager.FileManager(env=env)
     fm.archive("foo")
-    self.assertFalse(called_rename)
+    self.assertFalse(env.called_rename)
 
   def testArchiveMovesStuff(self):
-    rename_args = {}
-    def CallRename(*args):
-      rename_args['foo'] = args
+    class MockEnv:
+      def __init__(self):
+        self.rename_args = None
 
-    fm = file_manager.FileManager(path_checker=lambda fn: False,
-                                  file_mover=CallRename)
+      def MoveFile(self, src, dest):
+        self.rename_args = src, dest
+
+      def CheckPath(self, path):
+        # Pretend we HAVEN'T already archived this file
+        assert path == ".foo.bak"
+        return False
+
+    env = MockEnv()
+    fm = file_manager.FileManager(env=env)
     fm.archive("foo")
-    self.assertEquals(("foo", ".foo.bak"), rename_args['foo'])
-
-  class RecordingReader:
-    def __init__(self, value):
-      self.args = None
-      self.value = value
-
-    def read(self, *args):
-      self.args = args
-      return self.value
+    self.assertEquals(("foo", ".foo.bak"), env.rename_args)
 
   def testReadUnarchived(self):
-    r = self.RecordingReader("content")
-    fm = file_manager.FileManager(path_checker=lambda fn: False, reader=r.read)
-    self.assertEquals("content", fm.read("foo"))
-    self.assertEquals(("foo",), r.args)
+    class MockEnv:
+      def __init__(self):
+        self.called_read = False
+
+      def ReadFile(self, file):
+        assert file == "foo"
+        self.called_read = True
+        return "file content"
+
+    env = MockEnv()
+    fm = file_manager.FileManager(env=env)
+    self.assertEquals("file content", fm.read("foo"))
+    self.assertTrue(env.called_read)
 
   def testReadArchived(self):
-    r = self.RecordingReader("content")
-    fm = file_manager.FileManager(path_checker=lambda fn: True, reader=r.read)
+    class MockEnv:
+      def __init__(self):
+        self.called_read = False
+
+      def CheckPath(self, file):
+        # Pretend we've already archived this file
+        assert file == ".foo.bak"
+        return True
+
+      def ReadFile(self, file):
+        assert file == ".foo.bak"  # We'll read the archive if it exists.
+        self.called_read = True
+        return "file content"
+
+    env = MockEnv()
+    fm = file_manager.FileManager(env=env)
     fm.archive("foo")
-    self.assertEquals("content", fm.read("foo"))
-    self.assertEquals((".foo.bak",), r.args)
+    self.assertEquals("file content", fm.read("foo"))
+    self.assertTrue(env.called_read)
 
   def testDiff(self):
-    fm = file_manager.FileManager(reader=lambda fn: fn + '-contents',
-                                  path_checker=lambda fn: True)
-    self.assertEquals("foo-contents", fm.read("foo"))
-    fm.save("foo", "clobbered!")
+    class MockEnv:
+      def __init__(self):
+        pass
+      def ReadFile(self, file):
+        assert file == "foo"
+        return "Original contents"
+      def CheckPath(self, file):
+        assert file == "foo"
+        return True
+
+    env=MockEnv()
+    fm = file_manager.FileManager(env=env)
+    fm.save("foo", "New contents")
     expected = ("M foo\n"
                 "--- foo \n"
                 "+++ foo \n"
                 "@@ -1,1 +1,1 @@\n"
-                "-foo-contents\n"
-                "+clobbered!\n")
+                "-Original contents\n"
+                "+New contents\n")
     self.assertEquals(expected, fm.show_diff())
 
   def testDiffNew(self):
-    fm = file_manager.FileManager(path_checker=lambda fn: False)
+    class MockEnv:
+      def __init__(self):
+        pass
+      def ReadFile(self, file):
+        assert False, "This method should never be called!"
+      def CheckPath(self, file):
+        assert file == "foo"
+        return False
+    env = MockEnv()
+    fm = file_manager.FileManager(env=env)
     fm.save("foo", "clobbered!")
     expected = "A foo\n"
     self.assertEquals(expected, fm.show_diff())
+
+  def testCommitDirectoryExists(self):
+    test = self
+    class MockEnv:
+      def __init__(self):
+        pass
+
+      def CheckPath(self, path):
+        test.assertEquals(".", path)
+        return True
+
+      def WriteFile(self, path, contents):
+        assert path == "foo"
+        assert contents == "contents"
+
+    env = MockEnv()
+    fm = file_manager.FileManager(env=env)
+    fm.save("foo", "contents")
+    fm.commit()
+
+  def testCommitDirectoryDoesntExist(self):
+    class MockEnv:
+      def __init__(self):
+        self.called_mkdir = False
+
+      def CheckPath(self, path):
+        assert path == "dir"
+        return False
+
+      def WriteFile(self, path, contents):
+        assert path == "dir/foo"
+        assert contents == "contents"
+
+      def MakeDir(self, path):
+        assert path == "dir"
+        self.called_mkdir = True
+        return True
+
+    env = MockEnv()
+    fm = file_manager.FileManager(env=env)
+    fm.save("dir/foo", "contents")
+    fm.commit()
+    self.assertTrue(env.called_mkdir)
 
 
 if __name__ == '__main__':
