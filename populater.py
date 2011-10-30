@@ -40,10 +40,20 @@ def main(argv):
   start_date = datetime.datetime.now()
   end_date = start_date + datetime.timedelta(31)
 
-  events = ds.GetEventsInRange(start_date, end_date)
+  # NOTE(scottrw): the list() function is necessary because GetEventsInRange
+  # returns a generator, which is exhausted by the first template, leaving no
+  # events left for the second template!
+  events = list(ds.GetEventsInRange(start_date, end_date))
 
-  t = Template(file="calendar-landing-page.tmpl", searchList=[{"events": events}])
-  fm.save(options.output_dir + "events/calendar/index.html", str(t))
+  fm.save(options.output_dir + "events/calendar/index.html",
+          str(Template(file="calendar-landing-page.tmpl",
+                       searchList=[{"events": events}])))
+
+  fm.save(options.output_dir + "workshops/calendar/index.html",
+          str(Template(file="workshop-landing-page.tmpl",
+                       searchList=[{"events": events}])))
+
+  print fm.show_diff()
   fm.commit()
 
 if __name__ == "__main__":
