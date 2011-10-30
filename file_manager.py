@@ -71,9 +71,11 @@ class FileManager:
     """Shows changes you have made to the filesystem."""
     summary = ""
     diffs = ""
+    num_diffs = 0
     for filename, content in sorted(self.files.iteritems()):
       if not self.env.CheckPath(self.archives.get(filename, filename)):
         summary += "A %s\n" % filename
+        num_diffs += 1
         continue
       original_content = self.env.ReadFile(filename)
       if content != original_content:
@@ -82,6 +84,9 @@ class FileManager:
                               [l + '\n' for l in original_content.split('\n')],
                               [l + '\n' for l in content.split('\n')],
                               filename, filename))
+        num_diffs += 1
+    if not num_diffs:
+      summary = "No changes."
     return summary + diffs
 
   def commit(self):
