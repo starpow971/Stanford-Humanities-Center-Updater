@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright 2011, The Board of Regents of Leland Stanford, Jr. University
 # All rights reserved. See LICENSE. 
 # Author: Christine Williams <christine.bennett.williams@gmail.com>
@@ -5,19 +6,45 @@
 
 
 from Cheetah.Template import Template
+from optparse import OptionParser
 import datetime
+import sys
 
 import datastore
 import file_manager
 
-fm = file_manager.FileManager()
-ds = datastore.DataStore("database.db")
+def parse_args(argv):
+  """Sets up the option parser and parses command line arguments.
 
-start_date = datetime.datetime.now()
-end_date = start_date + datetime.timedelta(31)
+  Returns:
+    options, args: a pair whose first element is an Options object with settings
+    taken from the command line, and whose second element is the remaining
+    unparsed arguments on the command line.
+  """
+  op = OptionParser()
+  op.add_option("-o", "--output-dir", dest="output_dir",
+                help="Output generated files under DIR",
+                metavar="DIR",
+                default="/Library/Server/Web/Data/Sites/Default/")
+  options, args = op.parse_args(argv[1:])
+  if not options.output_dir.endswith("/"):
+    options.output_dir += "/"
+  return options, args
 
-events = ds.GetEventsInRange(start_date, end_date)
 
-t = Template(file="calendar-landing-page.tmpl", searchList=[{"events": events}])
-with open("/Library/Server/Web/Data/Sites/Default/events/calendar/index.html", "w") as f:
-  f.write(str(t))
+def main(argv):
+  options, args = parse_args(argv)
+  fm = file_manager.FileManager()
+  ds = datastore.DataStore("database.db")
+
+  start_date = datetime.datetime.now()
+  end_date = start_date + datetime.timedelta(31)
+
+  events = ds.GetEventsInRange(start_date, end_date)
+
+  t = Template(file="calendar-landing-page.tmpl", searchList=[{"events": events}])
+  fm.save(options.output_dir + "events/calendar/index.html", str(t))
+  fm.commit()
+
+if __name__ == "__main__":
+  main(sys.argv)
