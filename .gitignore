@@ -1,1 +1,3 @@
-*.pycindex.html
+*.pyc
+index.html
+out/
