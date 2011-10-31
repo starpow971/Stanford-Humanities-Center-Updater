@@ -54,8 +54,12 @@ def main(argv):
                        searchList=[{"events": events}])))
 
   for event in events:
+    if event.calendar_title == "Stanford Humanities Center Events":
+      tmpl = "shc_event.tmpl"
+    else:
+      tmpl = "workshop_event.tmpl"
     fm.save(options.output_dir + event.uri(), 
-            str(Template(file="event_page.tmpl",
+            str(Template(file=tmpl,
                          searchList=[{"event": event}])))
     
   #print fm.show_diff()
