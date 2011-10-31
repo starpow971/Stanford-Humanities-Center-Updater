@@ -15,7 +15,7 @@ class Event:
 	
 	def __init__(self, calendar_title="", event_title="", event_id="",
 	             start_time=None, end_time=None, location="", status="", 
-	             description="", updated="", is_all_day=False):
+	             description="", updated="", is_all_day=False, thumbnail="", full_image=""):
 		self.calendar_title = calendar_title
 		self.event_title = event_title
 		self.event_id = event_id
@@ -26,6 +26,8 @@ class Event:
 		self.description = description
 		self.updated = updated
 		self.is_all_day = is_all_day  # for events that have no real times
+		self.thumbnail = thumbnail #for events that have Picasa images attached
+		self.full_image = full_image #for events that have Picasa images attached
 		
 	def uri(self):
 		return "events/calendar/%s-%s-%s-%s.html" % (self.start_time.year, 
@@ -46,6 +48,8 @@ class Event:
 		        "location: %(location)r\n "
 		        "status: %(status)r\n "
 		        "description: %(description)r\n"
+		        "thumbnail: %(thumbnail)r\n"
+		        "full_image: %(full_image)r\n"
 		        "updated: %(updated)r"
 		        ">") % {
 		      		'calendar_title': self.calendar_title,
@@ -57,6 +61,8 @@ class Event:
 		      		'location': self.location,
 		      		'status': self.status,
 		      		'description': self.description[:40],
+		      		'thumbnail': self.thumbnail,
+		      		'full_image': self.full_image,
 		      		'updated': self.updated}
 				
 	def __eq__(self, other):
@@ -70,26 +76,31 @@ class Event:
 			self.status == other.status and
 			self.description == other.description and
 			self.updated == other.updated and
-			self.is_all_day == other.is_all_day)
+			self.is_all_day == other.is_all_day and
+			self.thumbnail == other.thumbnail and
+			self.full_image == other.full_image)
 				
 
 class EventDescription:
 	"""Represents data embedded in a Google Calendar description."""
 	
 	def __init__(self, start_time=None, end_time=None, location="", status="", 
-							 description="", is_all_day=False):
+							 description="", is_all_day=False, thumbnail="", full_image=""):
 		self.start_time = start_time #A datetime.
 		self.is_all_day = is_all_day
 		self.end_time = end_time #A datetime.
 		self.location = location
 		self.status = status
 		self.description = description
+		self.thumbnail = thumbnail
+		self.full_image = full_image
 		
 	def __repr__(self):
 		return ("<start time: %r end time: %r location: %s status: %s "
-						"description: %s is_all_day: %r>") % (
+						"description: %s is_all_day: %r thumbnail: %r "
+						"full image: %r>") % (
 		    self.start_time, self.end_time, self.location, self.status, 
-		    self.description, self.is_all_day)
+		    self.description, self.is_all_day, self.thumbnail, self.full_image)
 		
 	def __eq__(self, other):
 		return (self.start_time == other.start_time and 
@@ -97,7 +108,9 @@ class EventDescription:
 						self.location == other.location and
 						self.status == other.status and
 						self.description == other.description and
-						self.is_all_day == other.is_all_day)
+						self.is_all_day == other.is_all_day and
+						self.thumbnail == other.thumbnail and
+						self.full_image == other.full_image)
 		
 
 NAMESPACE = "{http://www.w3.org/2005/Atom}"
@@ -165,6 +178,12 @@ def parse_description(description):
 	else:
 		meta = description
 		description = None
+	if description and "thumbnail: " in description:
+	  description, image = description.split("thumbnail: ", 1)
+	  thumbnail, full_image = image.split("full_image: ", 1)
+	else:
+	  description = description
+	  image = None
 	when = DESCRIPTION_WHEN_RE.search(meta)
 	if not when:
 		logging.warning("No when: block found in %s" % meta)
@@ -224,7 +243,9 @@ def make_event(entry, cal_title):
   						 end_time=event_description.end_time,
   						 location=event_description.location,
   						 status=event_description.status,
-  						 description=event_description.description)
+  						 description=event_description.description,
+  						 thumbnail=event_description.thumbnail,
+  						 full_image=event_description.full_image)
 
 def parse_feed(xml):
 	feed = ET.parse(xml)
