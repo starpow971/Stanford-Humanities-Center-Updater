@@ -1,3 +1,5 @@
 *.pyc
+.DS_Store
 index.html
 out/
+database.db
