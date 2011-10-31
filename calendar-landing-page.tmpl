@@ -226,7 +226,7 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
 	<span style="font-size:13px; "><br /></span>
 	<span style="font-size:14px; color:black;font-weight:bold; ">$event.event_title</span>
 	<span style="font-size:13px; "><br />
-	#if event.is_all_day
+	#if $event.is_all_day
 	    $event.start_time.strftime("%A %B %d, %Y")
 	#else
 	    ${event.start_time.strftime("%A %B %d, %Y | %I:%M")}

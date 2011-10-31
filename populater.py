@@ -53,7 +53,12 @@ def main(argv):
           str(Template(file="workshop-landing-page.tmpl",
                        searchList=[{"events": events}])))
 
-  print fm.show_diff()
+  for event in events:
+    fm.save(options.output_dir + event.uri(), 
+            str(Template(file="event_page.tmpl",
+                         searchList=[{"event": event}])))
+    
+  #print fm.show_diff()
   fm.commit()
 
 if __name__ == "__main__":

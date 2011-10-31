@@ -27,6 +27,15 @@ class Event:
 		self.updated = updated
 		self.is_all_day = is_all_day  # for events that have no real times
 		
+	def uri(self):
+		return "events/calendar/%s/%s/%s/%s.html" % (self.start_time.year, 
+						self.start_time.month, self.start_time.day, self.friendly_title())
+						
+	def friendly_title(self):
+		title = re.sub(" +", "-", self.event_title.lower())
+		title = re.sub("[^-a-z0-9]", "", title)
+		return title
+		
 	def __repr__(self):
 		return ("\n<calendar_title: %(calendar_title)r\n "
 		        "event_title: %(event_title)r\n "
