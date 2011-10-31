@@ -28,7 +28,7 @@ class Event:
 		self.is_all_day = is_all_day  # for events that have no real times
 		
 	def uri(self):
-		return "events/calendar/%s/%s/%s/%s.html" % (self.start_time.year, 
+		return "events/calendar/%s-%s-%s-%s.html" % (self.start_time.year, 
 						self.start_time.month, self.start_time.day, self.friendly_title())
 						
 	def friendly_title(self):
