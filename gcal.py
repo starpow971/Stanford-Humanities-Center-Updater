@@ -186,6 +186,12 @@ def parse_description(description):
     description = description
     thumbnail = None
     full_image = None
+  if description and "thumbnail: " in description and not "full_image: " in description:
+    print "error for description in event: ", event.event_title, ":thumbnail but no full_image"
+  if description and "full_image: " in description and not "thumbnail: " in description:
+    print "error for description in event: ", event.event_title, ":full_image but no thumbnail"
+  if (description and 'full_image: ' and 'thumbnail: ' in description and description.find('full_image: ') < description.find('thumbnail: ')):
+    print "Error in description for event: ", event.event_title, ":thumbnail must come before full_image"
   when = DESCRIPTION_WHEN_RE.search(meta)
   if not when:
     logging.warning("No when: block found in %s" % meta)
