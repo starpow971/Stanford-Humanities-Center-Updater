@@ -178,12 +178,14 @@ def parse_description(description):
 	else:
 		meta = description
 		description = None
+	#import pdb; pdb.set_trace()
 	if description and "thumbnail: " in description:
-	  description, image = description.split("thumbnail: ", 1)
-	  thumbnail, full_image = image.split("full_image: ", 1)
+	  description, image = map(str.strip, description.split("thumbnail: ", 1))
+	  thumbnail, full_image = map(str.strip, image.split("full_image: ", 1))
 	else:
 	  description = description
-	  image = None
+	  thumbnail = None
+	  full_image = None
 	when = DESCRIPTION_WHEN_RE.search(meta)
 	if not when:
 		logging.warning("No when: block found in %s" % meta)
@@ -206,7 +208,7 @@ def parse_description(description):
 	return EventDescription(start_time=start_time, end_time=end_time, 
 													is_all_day=is_all_day,
 													location=location, status=event_status, 
-													description=description)
+													description=description, thumbnail=thumbnail, full_image=full_image)
 	    
 
 def make_event(entry, cal_title):
