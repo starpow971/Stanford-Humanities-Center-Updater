@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Copyright 2011, The Board of Regents of Leland Stanford, Jr. University
-# All rights reserved. See LICENSE. 
+# All rights reserved. See LICENSE.
 # Author: Christine Williams <christine.bennett.williams@gmail.com>
 # Description: Dump events from calendar and tumblr feeds straight into database.
 

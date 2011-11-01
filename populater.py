@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Copyright 2011, The Board of Regents of Leland Stanford, Jr. University
-# All rights reserved. See LICENSE. 
+# All rights reserved. See LICENSE.
 # Author: Christine Williams <christine.bennett.williams@gmail.com>
 # Description: Pulls events from database and writes them to disc.
 
@@ -58,10 +58,10 @@ def main(argv):
       tmpl = "shc_event.tmpl"
     else:
       tmpl = "workshop_event.tmpl"
-    fm.save(options.output_dir + event.uri(), 
+    fm.save(options.output_dir + event.uri(),
             str(Template(file=tmpl,
                          searchList=[{"event": event}])))
-    
+
   #print fm.show_diff()
   fm.commit()
 

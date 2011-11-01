@@ -1,5 +1,5 @@
 # Copyright 2011, The Board of Regents of Leland Stanford, Jr. University
-# All rights reserved. See LICENSE. 
+# All rights reserved. See LICENSE.
 # Author: Scott Williams <scottw@artesiancode.com>
 # Description: A shim over the filesystem so we can avoid clobbering files we
 # don't own.
@@ -45,7 +45,7 @@ class FileManager:
 
   def archive(self, filename):
     """Makes sure a template file won't be clobbered.
-    
+
     If a file named .<filename>.bak exists, this method has no effect. Otherwise
     it moves the named file.
     """
