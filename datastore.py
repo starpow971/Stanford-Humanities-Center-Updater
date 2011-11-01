@@ -1,7 +1,8 @@
 # Copyright 2011, The Board of Regents of Leland Stanford, Jr. University
 # All rights reserved. See LICENSE. 
 # Author: Christine Williams <christine.bennett.williams@gmail.com>
-# Description: Dump events from calendar and tumblr feeds straight into database.
+# Description: Manages an SQLite connection and performs merges between local database and calendar
+# and blogs.
 
 import datetime
 import logging
@@ -66,18 +67,20 @@ class DataStore:
           logging.warning("Updating event %s" % event.event_id)
           self.c.execute("update events set updated=?, calendar_title=?, event_title=?, "
                          "start_time=?, end_time=?, location=?, status=?, description=?, "
-                         "is_all_day=? "
+                         "is_all_day=?, thumbnail=?, full_image=? "
                          "where id=?",
                          (event.updated, event.calendar_title, event.event_title,
                           ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
-                           event.status, event.description, int(event.is_all_day), event.event_id))
+                           event.status, event.description, int(event.is_all_day),
+                           event.thumbnail, event.full_image, event.event_id))
       else:
         # Must be a new event!
         logging.warning("New event %s" % event.event_id)
-        self.c.execute("insert into events values (?,?,?,?,?,?,?,?,?,?)", 
+        self.c.execute("insert into events values (?,?,?,?,?,?,?,?,?,?,?,?)", 
                        (event.event_id, event.updated, event.calendar_title, event.event_title,
                         ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
-                        event.status, event.description, int(event.is_all_day)))
+                        event.status, event.description, int(event.is_all_day), event.thumbnail,
+                        event.full_image))
     for post in news:
       if post.post_id in already_have_posts:
         continue
@@ -94,7 +97,7 @@ class DataStore:
                      event_title=row[3], start_time=datetime.datetime.fromtimestamp(row[4]),
                      end_time=datetime.datetime.fromtimestamp(row[5]), 
                      location=row[6] or "", status=row[7], description=row[8] or "",
-                     is_all_day=bool(row[9]))
+                     is_all_day=bool(row[9]), thumbnail=row[10] or None, full_image=row[11] or None)
       if e.status != "canceled":
         yield e
                 

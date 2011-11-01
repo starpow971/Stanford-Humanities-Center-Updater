@@ -180,8 +180,8 @@ def parse_description(description):
 		description = None
 	#import pdb; pdb.set_trace()
 	if description and "thumbnail: " in description:
-	  description, image = map(str.strip, description.split("thumbnail: ", 1))
-	  thumbnail, full_image = map(str.strip, image.split("full_image: ", 1))
+	  description, image = (p.strip() for p in description.split("thumbnail: ", 1))
+	  thumbnail, full_image = (p.strip() for p in image.split("full_image: ", 1))
 	else:
 	  description = description
 	  thumbnail = None

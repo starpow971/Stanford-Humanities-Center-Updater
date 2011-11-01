@@ -232,6 +232,9 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
 	    ${event.end_time.strftime("-%I:%M %p")}
 	#end if
 	| $event.location<br /><br />
+	#if $event.full_image
+	    <img src="$event.full_image" style="padding: 5px" /><br />
+	#end if
 	$event.description<br /><br /></span>
 <div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
