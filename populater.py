@@ -61,10 +61,10 @@ def main(argv):
                                     "calendar_urls": calendar_urls}])))
 
   for event in all_events:
-    if event.calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
-      tmpl = "shc_event.tmpl"
-    else:
+    if event.IsWorkshop():
       tmpl = "workshop_event.tmpl"
+    else:
+      tmpl = "shc_event.tmpl"
     fm.save(options.output_dir + event.uri(),
             str(Template(file=tmpl,
                          searchList=[{"event": event,
@@ -77,30 +77,43 @@ def main(argv):
   for e in events:
     events_by_calendar[e.calendar_title].append(e)
   for calendar_name, calendar_events in events_by_calendar.iteritems():
-    if calendar_name in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
-      tmpl = "calendar-landing-page.tmpl"
-    else:
+    if event.IsWorkshop():
       tmpl = "workshop-landing-page.tmpl"
+    else:
+      tmpl= "calendar-landing-page.tmpl"
     fm.save(options.output_dir + uri(calendar_name),
             str(Template(file=tmpl,
                          searchList=[{"events": calendar_events,
                                       "calendar_title": calendar_name,
                                       "calendar_urls": calendar_urls}])))
 
+  cal_months = {}
+  all_workshop_months = {}
+  all_event_months = {}
+  for event in all_events:
+    cal_months.setdefault(event.calendar_title, {}).setdefault(event.yearmonth(), []).append(e)
+  if event.IsWorkshop():
+    all_workshop_months.setdefault(event.yearmonth(), []).append(e)
+  else:
+    all_event_months.setdefault(event.yearmonth(), []).append(e)
+
 
   #print fm.show_diff()
   fm.commit()
 
 def uri(calendar_title):
-  if calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
-    return "events/calendar/%s.html" % (friendly_title(calendar_title))
-  else:
+  if IsWorkshop(calendar_title):
     return "workshops/calendar/%s.html" % (friendly_title(calendar_title))
+  else:
+    return "events/calendar/%s.html" % (friendly_title(calendar_title))
 
 def friendly_title(calendar_title):
   title = re.sub(" +", "-", calendar_title.lower())
   title = re.sub("[^-a-z0-9]", "", title)
   return title
+
+def IsWorkshop(calendar_title):
+  return calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
 
 
 if __name__ == "__main__":
