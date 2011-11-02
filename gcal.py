@@ -41,8 +41,8 @@ class Event:
   def yearmonth(self):
     return datetime.datetime(self.start_time.year, self.start_time.month, 1)
 
-  def IsWorkshop(self):
-    return self.calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
+  #def IsWorkshop(self):
+    #return self.calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
 
   def __repr__(self):
     return ("\n<calendar_title: %(calendar_title)r\n "
