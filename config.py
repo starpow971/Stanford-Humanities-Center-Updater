@@ -8,6 +8,7 @@ calendar_ids = {
   "Stanford Humanities Center Events": "stanford.humanities.events%40gmail.com",
   "Archaeology Today": "8lg8kfefafh0o78nf0aaks144k%40group.calendar.google.com",
   "Art as Documentation, Memory as Art": "giajfek5u3eadsh0kubm4ujapk%40group.calendar.google.com",
+  "Co-sponsored Events Held at the Humanities Center": "otvj0o3d1s8kao8ohg9t4o958s@group.calendar.google.com",
   "Cognition & Language": "qt64bvm60aqgtcnt7dplsq1rds%40group.calendar.google.com",
   "Context Dependence in Language and Communication": "78v8iihj2d3f0h6l6260qoric8%40group.calendar.google.com",
   "Ethics & Politics, Ancient & Modern": "61bjb0uj27vtoq2ueo4fcv609g%40group.calendar.google.com",
