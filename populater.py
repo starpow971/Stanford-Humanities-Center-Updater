@@ -46,6 +46,7 @@ def main(argv):
   # returns a generator, which is exhausted by the first template, leaving no
   # events left for the second template!
   events = list(ds.GetEventsInRange(start_date, end_date))
+  all_events = list(ds.GetAllEvents())
 
   calendar_urls = [(name, uri(name)) for name in config.calendar_ids.keys()]
   fm.save(options.output_dir + "events/calendar/index.html",
@@ -59,7 +60,7 @@ def main(argv):
                                     "calendar_title": "Workshop Calendar",
                                     "calendar_urls": calendar_urls}])))
 
-  for event in events:
+  for event in all_events:
     if event.calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
       tmpl = "shc_event.tmpl"
     else:
@@ -85,6 +86,8 @@ def main(argv):
                          searchList=[{"events": calendar_events,
                                       "calendar_title": calendar_name,
                                       "calendar_urls": calendar_urls}])))
+
+
   #print fm.show_diff()
   fm.commit()
 

@@ -88,10 +88,7 @@ class DataStore:
                      (post.post_id, post.post_title, ToTimestamp(post.post_date), post.post_content,
                       post.post_category))
 
-  def GetEventsInRange(self, start_date, end_date):
-    """Returns a list of events in the date range, inclusive."""
-    self.c.execute("select * from events where start_time >= ? and start_time <= ? order by start_time",
-                    (ToTimestamp(start_date), ToTimestamp(end_date)))
+  def CreateEventsFromResults(self):
     for row in self.c:
       e = gcal.Event(event_id=row[0], updated=row[1], calendar_title=row[2],
                      event_title=row[3], start_time=datetime.datetime.fromtimestamp(row[4]),
@@ -100,6 +97,19 @@ class DataStore:
                      is_all_day=bool(row[9]), thumbnail=row[10] or None, full_image=row[11] or None)
       if e.status != "canceled":
         yield e
+
+  def GetEventsInRange(self, start_date, end_date):
+    """Returns a list of events in the date range, inclusive."""
+    self.c.execute("select * from events where start_time >= ? and start_time <= ? order by start_time",
+                    (ToTimestamp(start_date), ToTimestamp(end_date)))
+    return self.CreateEventsFromResults()
+
+
+  def GetAllEvents(self):
+    """Returns all of the events, inclusive, for archival purposes."""
+    self.c.execute("select * from events;")
+    return self.CreateEventsFromResults()
+
 
   def save(self):
     """Commits pending changes to the database."""
