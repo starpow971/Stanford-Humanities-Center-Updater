@@ -107,7 +107,7 @@ class DataStore:
 
   def GetAllEvents(self):
     """Returns all of the events, inclusive, for archival purposes."""
-    self.c.execute("select * from events;")
+    self.c.execute("select * from events order by start_time")
     return self.CreateEventsFromResults()
 
 

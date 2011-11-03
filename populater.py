@@ -60,12 +60,12 @@ def main(argv):
                                     "calendar_title": "Workshop Calendar",
                                     "calendar_urls": calendar_urls}])))
 
-  for event in all_events:
+  for event in events:
     if event.calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
       tmpl = "shc_event.tmpl"
     else:
       tmpl = "workshop_event.tmpl"
-    #if event.IsWorkshop():
+    #if IsWorkshop(event.calendar_title):
       #tmpl = "workshop_event.tmpl"
     #else:
       #tmpl = "shc_event.tmpl"
@@ -81,11 +81,11 @@ def main(argv):
   for e in events:
     events_by_calendar[e.calendar_title].append(e)
   for calendar_name, calendar_events in events_by_calendar.iteritems():
-    if event.calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
+    if calendar_name in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
       tmpl = "calendar-landing-page.tmpl"
     else:
       tmpl = "workshop-landing-page.tmpl"
-    #if IsWorkshop(calendar_title):
+    #if IsWorkshop(event.calendar_title):
       #tmpl = "workshop-landing-page.tmpl"
     #else:
       #tmpl= "calendar-landing-page.tmpl"
@@ -94,6 +94,8 @@ def main(argv):
                          searchList=[{"events": calendar_events,
                                       "calendar_title": calendar_name,
                                       "calendar_urls": calendar_urls}])))
+
+
 
   cal_months = {}
   all_workshop_months = {}
@@ -112,7 +114,7 @@ def main(argv):
       tmpl = "calendar-landing-page.tmpl"
     else:
       tmpl = "workshop-landing-page.tmpl"
-    #if IsWorkshop(calendar_title):
+    #if IsWorkshop(event.calendar_title):
       #tmpl = "workshop-landing-page.tmpl"
     #else:
       #tmpl = "calendar-landing-page.tmpl"
@@ -121,11 +123,16 @@ def main(argv):
                          searchList=[{"events": all_events,
                                       "calendar_title": calendar_name,
                                       "calendar_urls": calendar_urls}])))
+
   #print fm.show_diff()
   fm.commit()
 
+
+
 def uri(calendar_title):
-  if calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
+  if calendar_title == "Stanford Humanities Center Events":
+    return "events/calendar/%s.html" % (friendly_title(calendar_title))
+  elif calendar_title == "Co-sponsored Events Held at the Humanities Center":
     return "events/calendar/%s.html" % (friendly_title(calendar_title))
   else:
     return "workshops/calendar/%s.html" % (friendly_title(calendar_title))
@@ -140,7 +147,7 @@ def friendly_title(calendar_title):
   return title
 
 #def IsWorkshop(calendar_title):
-  #return calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
+  #return calendar_title not in ["Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"]
 
 
 if __name__ == "__main__":
