@@ -222,6 +222,18 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
 <h1>$calendar_title</h1>
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_934_page107' class='stacks_out'><div id='stacks_in_934_page107' class='stacks_in'>
+	#if $forward
+    <div style="float:right">
+      <a href="$forward.strftime('%Y-%m.html')"
+        >$forward.strftime('%b %Y')&raquo;</a>
+    </div>
+  #end if
+  #if $back
+    <div>
+      <a href="$back.strftime('%Y-%m.html')"
+        >&laquo;$back.strftime('%b %Y')</a>
+    </div>
+  #end if
 		#for $event in $events
 	#if $event.thumbnail
 	    <img src="$event.thumbnail" style="float:left; padding: 5px" />
@@ -242,6 +254,18 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
 	| $event.location<br /><br style="clear:both" />
 	<hr><br /></span>
 	#end for
+	#if $forward
+    <div style="float:right">
+      <a href="$forward.strftime('%Y-%m.html')"
+        >$forward.strftime('%b %Y')&raquo;</a>
+    </div>
+  #end if
+  #if $back
+    <div>
+      <a href="$back.strftime('%Y-%m.html')"
+        >&laquo;$back.strftime('%b %Y')</a>
+    </div>
+  #end if
 <div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
 </div>

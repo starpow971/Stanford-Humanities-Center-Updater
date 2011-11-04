@@ -72,7 +72,9 @@ def WriteUpcomingEvents(options, fm, events):
   fm.save(options.output_dir + "events/calendar/index.html",
           str(Template(file="calendar-landing-page.tmpl",
                        searchList=[{"events": events,
-                                    "calendar_title": "Events Calendar"}])))
+                                    "calendar_title": "Events Calendar",
+                                    "forward": None,
+                                    "back": None}])))
 
 def WriteUpcomingWorkshops(options, fm, events, calendar_urls):
   fm.save(options.output_dir + "workshops/calendar/index.html",
@@ -116,17 +118,25 @@ def WriteIndividualCalendars(options, fm, events, calendar_urls):
             str(Template(file=tmpl,
                          searchList=[{"events": calendar_events,
                                       "calendar_title": calendar_name,
-                                      "calendar_urls": calendar_urls}])))
+                                      "calendar_urls": calendar_urls,
+                                      "forward": None,
+                                      "back": None}])))
 
 
 def WritePerMonthCalendars(options, fm, all_event_months, calendar_urls):
-  for yearmonth, events in all_event_months.iteritems():
-   calendar_title = yearmonth.strftime("Events calendar for %B %Y")
-   #Render a calendar template into the right file
-   fm.save(options.output_dir + yearmonth.strftime("events/calendar/%Y-%m.html"),
-           str(Template(file="calendar-landing-page.tmpl",
-                        searchList=[{"events": events,
-                                     "calendar_title": calendar_title}])))
+  month_events = sorted(all_event_months.items())
+  months = [month for month, events in month_events]
+  for (yearmonth, events), back, forward in zip(month_events,
+                                                [None] + months[:-1],
+                                                months[1:] + [None]):
+    calendar_title = yearmonth.strftime("Events calendar for %B %Y")
+    #Render a calendar template into the right file
+    fm.save(options.output_dir + yearmonth.strftime("events/calendar/%Y-%m.html"),
+            str(Template(file="calendar-landing-page.tmpl",
+                         searchList=[{"events": events,
+                                      "calendar_title": calendar_title,
+                                      "back": back,
+                                      "forward": forward}])))
 
 def uri(calendar_title):
   if calendar_title == "Stanford Humanities Center Events":
