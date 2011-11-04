@@ -241,9 +241,9 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
   #if $back
     <div>
       <a href="$back.strftime('%Y-%m.html')"
-        >&laquo;$back.strftime('%b %Y')</a>
+        >&laquo;$back.strftime('%b %Y')</a><br><br>
     </div>
-  #end if<br><br>
+  #end if
 		#for $event in $events
 	#if $event.thumbnail
 	    <img src="$event.thumbnail" style="float:left; padding: 5px" />
