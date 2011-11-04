@@ -138,6 +138,25 @@ def WritePerMonthCalendars(options, fm, all_event_months, calendar_urls):
                                       "back": back,
                                       "forward": forward}])))
 
+
+def WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls):
+  for calendar, all_event_months in cal_months:
+    month_events = sorted(all_event_months.items())
+    months = [month for month, events in month_events]
+    for (yearmonth, events), back, forward in zip(month_events,
+                                                  [None] + months[:-1],
+                                                  months[1:] + [None]):
+      calendar_title = yearmonth.strftime("Events calendar for %B %Y")
+      #Render a calendar template into the right file
+      #Include if to determine which tmpl to use
+      #change tmpls to include if back, forward, month thingys.
+      fm.save(options.output_dir + yearmonth.strftime("events/calendar/%Y-%m.html"),
+              str(Template(file="calendar-landing-page.tmpl",
+                           searchList=[{"events": events,
+                                        "calendar_title": calendar_title,
+                                        "back": back,
+                                        "forward": forward}])))
+
 def uri(calendar_title):
   if calendar_title == "Stanford Humanities Center Events":
     return "events/calendar/%s.html" % (friendly_title(calendar_title))
