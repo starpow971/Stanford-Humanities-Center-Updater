@@ -60,9 +60,10 @@ def main(argv):
   calendar_urls = [(name, uri(name)) for name in config.calendar_ids.keys()]
   WriteUpcomingEvents(options, fm, events)
   WriteUpcomingWorkshops(options, fm, events, calendar_urls)
-  WriteEventPages(options, fm, events, calendar_urls)
+  WriteEventPages(options, fm, all_events, calendar_urls)
   WriteIndividualCalendars(options, fm, events, calendar_urls)
   WritePerMonthCalendars(options, fm, all_event_months, calendar_urls)
+  WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls)
 
   #print fm.show_diff()
   fm.commit()
@@ -73,8 +74,10 @@ def WriteUpcomingEvents(options, fm, events):
           str(Template(file="calendar-landing-page.tmpl",
                        searchList=[{"events": events,
                                     "calendar_title": "Events Calendar",
-                                    "forward": None,
-                                    "back": None}])))
+                                    "forward_url": None,
+                                    "forward_text": None,
+                                    "back_url": None,
+                                    "back_text": None}])))
 
 def WriteUpcomingWorkshops(options, fm, events, calendar_urls):
   fm.save(options.output_dir + "workshops/calendar/index.html",
@@ -82,11 +85,13 @@ def WriteUpcomingWorkshops(options, fm, events, calendar_urls):
                        searchList=[{"events": events,
                                     "calendar_title": "Workshop Calendar",
                                     "calendar_urls": calendar_urls,
-                                    "forward": None,
-                                    "back": None}])))
+                                    "forward_url": None,
+                                    "forward_text": None,
+                                    "back_url": None,
+                                    "back_text": None}])))
 
-def WriteEventPages(options, fm, events, calendar_urls):
-  for event in events:
+def WriteEventPages(options, fm, all_events, calendar_urls):
+  for event in all_events:
     if event.calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
       tmpl = "shc_event.tmpl"
     else:
@@ -100,8 +105,10 @@ def WriteEventPages(options, fm, events, calendar_urls):
                          searchList=[{"event": event,
                                       "calendar_title": event.calendar_title,
                                       "calendar_urls": calendar_urls,
-                                      "forward": None,
-                                      "back": None}])))
+                                      "forward_url": None,
+                                      "forward_text": None,
+                                      "back_url": None,
+                                      "back_text": None}])))
 
 def WriteIndividualCalendars(options, fm, events, calendar_urls):
   events_by_calendar = {}
@@ -123,8 +130,10 @@ def WriteIndividualCalendars(options, fm, events, calendar_urls):
                          searchList=[{"events": calendar_events,
                                       "calendar_title": calendar_name,
                                       "calendar_urls": calendar_urls,
-                                      "forward": None,
-                                      "back": None}])))
+                                      "forward_url": None,
+                                      "forward_text": None,
+                                      "back_url": None,
+                                      "back_text": None}])))
 
 
 def WritePerMonthCalendars(options, fm, all_event_months, calendar_urls):
@@ -139,30 +148,39 @@ def WritePerMonthCalendars(options, fm, all_event_months, calendar_urls):
             str(Template(file="calendar-landing-page.tmpl",
                          searchList=[{"events": events,
                                       "calendar_title": calendar_title,
-                                      "back": back,
-                                      "forward": forward}])))
+                                      "back_url": back and back.strftime('%Y-%m.html'),
+                                      "back_text": back and back.strftime ('%b %Y') + "&laquo;",
+                                      "forward_url": forward and forward.strftime('%Y-%m.html'),
+                                      "forward_text": forward and forward.strftime('%b %Y') + "&raquo;",
+                                      "calendar": calendar_title}])))
 
 
-"""def WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls):
-  for calendar, all_event_months in cal_months:
+def WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls):
+  for calendar, all_event_months in cal_months.iteritems():
     month_events = sorted(all_event_months.items())
     months = [month for month, events in month_events]
     for (yearmonth, events), back, forward in zip(month_events,
                                                   [None] + months[:-1],
                                                   months[1:] + [None]):
-      calendar_title = yearmonth.strftime("Events calendar for %B %Y")
+      calendar_title = calendar + " Events For " + yearmonth.strftime("%B %Y")
       #Render a calendar template into the right file
-      if calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
+      if calendar in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
         tmpl = "calendar-landing-page.tmpl"
       else:
         tmpl = "workshop-landing-page.tmpl"
-      #change tmpls to include if back, forward, month thingys.
-      fm.save(options.output_dir + yearmonth.strftime("events/calendar/%Y-%m.html"),
+      fm.save(options.output_dir + month_uri(yearmonth, calendar),
               str(Template(file=tmpl,
                            searchList=[{"events": events,
                                         "calendar_title": calendar_title,
-                                        "back": back,
-                                        "forward": forward}])))"""
+                                        "calendar_urls": calendar_urls,
+                                        "back_url": back and "../../" + month_uri(back, calendar),
+                                        "back_text": back and back.strftime('%b %Y'),
+                                        "forward_url": forward and "../../" + month_uri(forward, calendar),
+                                        "forward_text": forward and forward.strftime('%b %Y') + "&raquo;",
+                                        "calendar": calendar}])))
+
+def month_uri(yearmonth, calendar):
+  return yearmonth.strftime("events/calendar/%%Y-%%m-%s.html" % friendly_title(calendar))
 
 def uri(calendar_title):
   if calendar_title == "Stanford Humanities Center Events":
