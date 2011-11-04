@@ -81,7 +81,9 @@ def WriteUpcomingWorkshops(options, fm, events, calendar_urls):
           str(Template(file="workshop-landing-page.tmpl",
                        searchList=[{"events": events,
                                     "calendar_title": "Workshop Calendar",
-                                    "calendar_urls": calendar_urls}])))
+                                    "calendar_urls": calendar_urls,
+                                    "forward": None,
+                                    "back": None}])))
 
 def WriteEventPages(options, fm, events, calendar_urls):
   for event in events:
@@ -97,7 +99,9 @@ def WriteEventPages(options, fm, events, calendar_urls):
             str(Template(file=tmpl,
                          searchList=[{"event": event,
                                       "calendar_title": event.calendar_title,
-                                      "calendar_urls": calendar_urls}])))
+                                      "calendar_urls": calendar_urls,
+                                      "forward": None,
+                                      "back": None}])))
 
 def WriteIndividualCalendars(options, fm, events, calendar_urls):
   events_by_calendar = {}
@@ -139,7 +143,7 @@ def WritePerMonthCalendars(options, fm, all_event_months, calendar_urls):
                                       "forward": forward}])))
 
 
-def WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls):
+"""def WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls):
   for calendar, all_event_months in cal_months:
     month_events = sorted(all_event_months.items())
     months = [month for month, events in month_events]
@@ -148,14 +152,17 @@ def WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls):
                                                   months[1:] + [None]):
       calendar_title = yearmonth.strftime("Events calendar for %B %Y")
       #Render a calendar template into the right file
-      #Include if to determine which tmpl to use
+      if calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
+        tmpl = "calendar-landing-page.tmpl"
+      else:
+        tmpl = "workshop-landing-page.tmpl"
       #change tmpls to include if back, forward, month thingys.
       fm.save(options.output_dir + yearmonth.strftime("events/calendar/%Y-%m.html"),
-              str(Template(file="calendar-landing-page.tmpl",
+              str(Template(file=tmpl,
                            searchList=[{"events": events,
                                         "calendar_title": calendar_title,
                                         "back": back,
-                                        "forward": forward}])))
+                                        "forward": forward}])))"""
 
 def uri(calendar_title):
   if calendar_title == "Stanford Humanities Center Events":

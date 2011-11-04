@@ -223,6 +223,28 @@ jQuery(document).ready(function ($) {
 <h1>$calendar_title</h1>
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_28737_page102' class='stacks_out'><div id='stacks_in_28737_page102' class='stacks_in'>
+  #if not $forward and not $back and $events
+    <div style="float:right">
+      <a href="$events[-1].start_time.strftime('%Y-%m.html')"
+        >All events for $events[-1].start_time.strftime('%b %Y')&raquo;</a>
+    </div>
+    <div>
+      <a href="$events[0].start_time.strftime('%Y-%m.html')"
+        >&laquo; All events for $events[0].start_time.strftime('%b %Y')</a>
+    </div>
+  #end if
+	#if $forward
+    <div style="float:right">
+      <a href="$forward.strftime('%Y-%m.html')"
+        >$forward.strftime('%b %Y')&raquo;</a>
+    </div>
+  #end if
+  #if $back
+    <div>
+      <a href="$back.strftime('%Y-%m.html')"
+        >&laquo;$back.strftime('%b %Y')</a>
+    </div>
+  #end if
 	#for $event in $events
 	#if $event.calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
 	<span style="font-size:11px; ">$event.calendar_title.upper()</span>
@@ -242,7 +264,28 @@ jQuery(document).ready(function ($) {
 	<hr><br /></span>
 	#end if
 	#end for
-
+	#if $forward
+    <div style="float:right">
+      <a href="$forward.strftime('%Y-%m.html')"
+        >$forward.strftime('%b %Y')&raquo;</a>
+    </div>
+  #end if
+  #if $back
+    <div>
+      <a href="$back.strftime('%Y-%m.html')"
+        >&laquo;$back.strftime('%b %Y')</a>
+    </div>
+  #end if
+  #if not $forward and not $back and $events
+    <div style="float:right">
+      <a href="$events[-1].start_time.strftime('%Y-%m.html')"
+        >All events for $events[-1].start_time.strftime('%b %Y')&raquo;</a>
+    </div>
+    <div>
+      <a href="$events[0].start_time.strftime('%Y-%m.html')"
+        >&laquo; All events for $events[0].start_time.strftime('%b %Y')</a>
+    </div>
+  #end if
 <div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
 </div>
