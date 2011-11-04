@@ -48,18 +48,40 @@ def main(argv):
   events = list(ds.GetEventsInRange(start_date, end_date))
   all_events = list(ds.GetAllEvents())
 
+
+  cal_months = {}
+  all_workshop_months = {}
+  all_event_months = {}
+  for event in all_events:
+    cal_months.setdefault(event.calendar_title, {}).setdefault(event.yearmonth(), []).append(event)
+    all_event_months.setdefault(event.yearmonth(), []).append(event)
+
+
   calendar_urls = [(name, uri(name)) for name in config.calendar_ids.keys()]
+  WriteUpcomingEvents(options, fm, events)
+  WriteUpcomingWorkshops(options, fm, events, calendar_urls)
+  WriteEventPages(options, fm, events, calendar_urls)
+  WriteIndividualCalendars(options, fm, events, calendar_urls)
+  WritePerMonthCalendars(options, fm, all_event_months, calendar_urls)
+
+  #print fm.show_diff()
+  fm.commit()
+
+
+def WriteUpcomingEvents(options, fm, events):
   fm.save(options.output_dir + "events/calendar/index.html",
           str(Template(file="calendar-landing-page.tmpl",
                        searchList=[{"events": events,
                                     "calendar_title": "Events Calendar"}])))
 
+def WriteUpcomingWorkshops(options, fm, events, calendar_urls):
   fm.save(options.output_dir + "workshops/calendar/index.html",
           str(Template(file="workshop-landing-page.tmpl",
                        searchList=[{"events": events,
                                     "calendar_title": "Workshop Calendar",
                                     "calendar_urls": calendar_urls}])))
 
+def WriteEventPages(options, fm, events, calendar_urls):
   for event in events:
     if event.calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
       tmpl = "shc_event.tmpl"
@@ -75,6 +97,7 @@ def main(argv):
                                       "calendar_title": event.calendar_title,
                                       "calendar_urls": calendar_urls}])))
 
+def WriteIndividualCalendars(options, fm, events, calendar_urls):
   events_by_calendar = {}
   for cal_id in config.calendar_ids.iterkeys():
     events_by_calendar[cal_id] = []
@@ -96,38 +119,14 @@ def main(argv):
                                       "calendar_urls": calendar_urls}])))
 
 
-
-  cal_months = {}
-  all_workshop_months = {}
-  all_event_months = {}
-  for event in all_events:
-    cal_months.setdefault(event.calendar_title, {}).setdefault(event.yearmonth(), []).append(e)
-    if event.calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
-      all_event_months.setdefault(event.yearmonth(), []).append(e)
-    else:
-      all_workshop_months.setdefault(event.yearmonth(), []).append(e)
-
-
+def WritePerMonthCalendars(options, fm, all_event_months, calendar_urls):
   for yearmonth, events in all_event_months.iteritems():
-  #Render a calendar template into the right file
-    if event.calendar_title in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center"):
-      tmpl = "calendar-landing-page.tmpl"
-    else:
-      tmpl = "workshop-landing-page.tmpl"
-    #if IsWorkshop(event.calendar_title):
-      #tmpl = "workshop-landing-page.tmpl"
-    #else:
-      #tmpl = "calendar-landing-page.tmpl"
-    fm.save(options.output_dir + yearmonth.strftime("events/calendar/%Y-%m.html"),
-            str(Template(file=tmpl,
-                         searchList=[{"events": all_events,
-                                      "calendar_title": calendar_name,
-                                      "calendar_urls": calendar_urls}])))
-
-  #print fm.show_diff()
-  fm.commit()
-
-
+   calendar_title = yearmonth.strftime("Events calendar for %B %Y")
+   #Render a calendar template into the right file
+   fm.save(options.output_dir + yearmonth.strftime("events/calendar/%Y-%m.html"),
+           str(Template(file="calendar-landing-page.tmpl",
+                        searchList=[{"events": events,
+                                     "calendar_title": calendar_title}])))
 
 def uri(calendar_title):
   if calendar_title == "Stanford Humanities Center Events":
