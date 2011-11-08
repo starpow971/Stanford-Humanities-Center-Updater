@@ -222,16 +222,6 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
 <h1>$calendar_title</h1>
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_934_page107' class='stacks_out'><div id='stacks_in_934_page107' class='stacks_in'>
-  #if not $forward_url and not $back_url and $events
-    <div style="float:right">
-      <a href="$events[-1].start_time.strftime('%Y-%m.html')"
-        >All events for $events[-1].start_time.strftime('%b %Y')&raquo;</a>
-    </div>
-    <div>
-      <a href="$events[0].start_time.strftime('%Y-%m.html')"
-        >&laquo; All events for $events[0].start_time.strftime('%b %Y')</a>
-    </div>
-  #end if
 	#if $forward_url and $forward_text
     <div style="float:right">
       <a href="$forward_url"
@@ -264,16 +254,6 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
 	| $event.location<br /><br style="clear:both" />
 	<hr><br /></span>
 	#end for
-  #if not $forward_url and not $back_url and $events
-    <div style="float:right">
-      <a href="$events[-1].start_time.strftime('%Y-%m.html')"
-        >All events for $events[-1].start_time.strftime('%b %Y')&raquo;</a>
-    </div>
-    <div>
-      <a href="$events[0].start_time.strftime('%Y-%m.html')"
-        >&laquo; All events for $events[0].start_time.strftime('%b %Y')</a>
-    </div>
-  #end if
 	#if $forward_url and $forward_text
     <div style="float:right">
       <a href="$forward_url"

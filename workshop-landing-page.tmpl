@@ -210,7 +210,7 @@ jQuery(document).ready(function ($) {
 <div id='stacks_out_28732_page102' class='stacks_out'><div id='stacks_in_28732_page102' class='stacks_in'>
 <span style="color:#000000;font-weight:bold;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /><br />
 #for name, uri in sorted($calendar_urls)
-#if $calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
+#if $name != "Stanford Humanities Center Events" and "Co-sponsored Events Held at the Humanities Center"
 <a href="../../$uri">$name</a><br><br>
 #end if
 #end for
@@ -223,16 +223,6 @@ jQuery(document).ready(function ($) {
 <h1>$calendar_title</h1>
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_28737_page102' class='stacks_out'><div id='stacks_in_28737_page102' class='stacks_in'>
-  #if not $forward_url and not $back_url and $events
-    <div style="float:right">
-      <a href="$events[-1].start_time.strftime('%Y-%m.html')"
-        >All events for $events[-1].start_time.strftime('%b %Y')&raquo;</a>
-    </div>
-    <div>
-      <a href="$events[0].start_time.strftime('%Y-%m.html')"
-        >&laquo; All events for $events[0].start_time.strftime('%b %Y')</a>
-    </div>
-  #end if
 	#if $forward_url and $forward_text
     <div style="float:right">
       <a href="$forward_url"
@@ -264,16 +254,6 @@ jQuery(document).ready(function ($) {
 	<hr><br /></span>
 	#end if
 	#end for
-	  #if not $forward_url and not $back_url and $events
-    <div style="float:right">
-      <a href="$events[-1].start_time.strftime('%Y-%m.html')"
-        >All events for $events[-1].start_time.strftime('%b %Y')&raquo;</a>
-    </div>
-    <div>
-      <a href="$events[0].start_time.strftime('%Y-%m.html')"
-        >&laquo; All events for $events[0].start_time.strftime('%b %Y')</a>
-    </div>
-  #end if
 	#if $forward_url and $forward_text
     <div style="float:right">
       <a href="$forward_url"
