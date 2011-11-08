@@ -210,7 +210,7 @@ jQuery(document).ready(function ($) {
 <div id='stacks_out_30056_page28' class='stacks_out'><div id='stacks_in_30056_page28' class='stacks_in'>
 <span style="color:#000000;font-weight:bold;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /><br />
 #for name, uri in sorted($calendar_urls)
-#if $calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
+#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center"
 <a href="../../$uri">$name</a><br><br>
 #end if
 #end for
