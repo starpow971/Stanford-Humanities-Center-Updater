@@ -204,7 +204,12 @@ jQuery(document).ready(function ($) {
 </div>
 <div class='stacks_div stacks_right'>
 <div id='stacks_out_29381_page102' class='stacks_out'><div id='stacks_in_29381_page102' class='stacks_in'>
-<span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /><br /><span style="color:#70694E;"><br /><br /><br />#for name, uri in sorted($calendar_urls)<br />#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center"<br /><a href="../../$uri">$name</a><br><br><br />#end if<br />#end for<br /></span>
+<span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /><br /><span style="color:#70694E;"><br /><br /><br />
+	#for name, uri in sorted($calendar_urls)
+	#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center"
+	<a href="../../$uri">$name</a><br><br>
+	#end if
+	#end for<br /></span>
 <div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
 </div>
@@ -248,53 +253,50 @@ jQuery(document).ready(function ($) {
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_29386_page102' class='stacks_out'><div id='stacks_in_29386_page102' class='stacks_in'>
 	#if $forward_url and $forward_text
-    <div style="float:right">
-      <a href="$forward_url"
-        >$forward_text</a>
+	<div style="float:right">
+	<a href="$forward_url">$forward_text</a>
     </div>
-  #end if
-  #if $back_url and $back_text
+	#end if
+	#if $back_url and $back_text
     <div>
-      <a href="$back_url"
-        >&laquo;$back_text</a><br><br>
+	<a href="$back_url">&laquo;$back_text</a><br><br>
     </div>
-  #end if
-<div class='stacks_clearer'></div></div></div>
+	#end if
+	<div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_29388_page102' class='stacks_out'><div id='stacks_in_29388_page102' class='stacks_in'>
-
-#for $event in $events
+	#for $event in $events
 	#if event.calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
 	<span style="font-size:11px; ">$event.calendar_title.upper()</span>
 	<span style="font-size:13px; "><br /></span>
 	<a style="font-size:14px; font-weight:bold; " href="../../$event.uri()">$event.event_title</a>
 	<span style="font-size:13px; "><br />
 	#if $event.is_all_day
-	    $event.start_time.strftime("%A %B %d, %Y")
+	$event.start_time.strftime("%A %B %d, %Y")
 	#else
-	    ${event.start_time.strftime("%A %B %d, %Y | %I:%M")}
-	    #if $event.start_time.strftime("%p") != $event.end_time.strftime("%p")
+	${event.start_time.strftime("%A %B %d, %Y | %I:%M")}
+	#if $event.start_time.strftime("%p") != $event.end_time.strftime("%p")
 	        ${event.start_time.strftime("%p")}
-	    #end if
-	    ${event.end_time.strftime("-%I:%M %p")}
+	#end if
+	${event.end_time.strftime("-%I:%M %p")}
 	#end if
 	| $event.location<br /><br />
-	<hr><br /></span>
+	<hr>
+	<br /></span>
 	#end if
 	#end for
 	#if $forward_url and $forward_text
-    <div style="float:right">
-      <a href="$forward_url"
+	<div style="float:right">
+	<a href="$forward_url"
         >$forward_text</a>
     </div>
-  #end if
-  #if $back_url and $back_text
+	#end if
+	#if $back_url and $back_text
     <div>
-      <a href="$back_url"
+	<a href="$back_url"
         >&laquo;$back_text</a><br><br>
     </div>
-  #end if
-
-<div class='stacks_clearer'></div></div></div>
+	#end if
+	<div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
 </div>
 <div class='stacks_clearer'></div>
