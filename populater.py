@@ -7,6 +7,7 @@
 
 from Cheetah.Template import Template
 from optparse import OptionParser
+import bisect
 import datetime
 import re
 import sys
@@ -61,7 +62,7 @@ def main(argv):
   WriteUpcomingEvents(options, fm, events)
   WriteUpcomingWorkshops(options, fm, events, calendar_urls)
   WriteEventPages(options, fm, all_events, calendar_urls)
-  WriteIndividualCalendars(options, fm, events, calendar_urls)
+  WriteIndividualCalendars(options, fm, events, cal_months, calendar_urls, start_date, end_date)
   WritePerMonthCalendars(options, fm, all_event_months, calendar_urls)
   WritePerMonthWorkshopCalendars(options, fm, all_event_months, calendar_urls)
   WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls)
@@ -107,7 +108,7 @@ def WriteEventPages(options, fm, all_events, calendar_urls):
                                       "back_url": None,
                                       "back_text": None}])))
 
-def WriteIndividualCalendars(options, fm, events, calendar_urls):
+def WriteIndividualCalendars(options, fm, events, cal_months, calendar_urls, start_date, end_date):
   events_by_calendar = {}
   for cal_id in config.calendar_ids.iterkeys():
     events_by_calendar[cal_id] = []
@@ -118,16 +119,29 @@ def WriteIndividualCalendars(options, fm, events, calendar_urls):
       tmpl = "calendar-landing-page.tmpl"
     else:
       tmpl = "workshop-landing-page.tmpl"
-    if not events:
-      forward_url = None
-      forward_text = None
-      back_url = None
-      back_text = None
+    if not calendar_events:
+      all_events = cal_months.get(calendar_name, None)
+      if not all_events:
+        forward_url = None
+        forward_text = None
+        back_url = None
+        back_text = None
+      else:
+        months = all_events.keys()
+        months.sort()
+        back_index = max(0, min(bisect.bisect_left(months, start_date), len(months) - 1) - 1)
+        next_index = min(bisect.bisect_left(months, start_date), len(months) - 1)
+        back_date = months[back_index]
+        next_date = months[next_index]
+        forward_url = "../../" + month_uri(next_date, calendar_name)
+        forward_text = next_date.strftime('%b %Y') + "&raquo;"
+        back_url = "../../" + month_uri(back_date, calendar_name)
+        back_text = back_date.strftime('%b %Y')
     else:
-      forward_url = calendar_events and "../../" + month_uri(calendar_events[-1].start_time, calendar_name)
-      forward_text = calendar_events and calendar_events[-1].start_time.strftime('%b %Y') + "&raquo;"
-      back_url = calendar_events and "../../" + month_uri(calendar_events[0].start_time, calendar_name)
-      back_text = calendar_events and calendar_events[0].start_time.strftime('%b %Y')
+      forward_url = "../../" + month_uri(calendar_events[-1].start_time, calendar_name)
+      forward_text = calendar_events[-1].start_time.strftime('%b %Y') + "&raquo;"
+      back_url = "../../" + month_uri(calendar_events[0].start_time, calendar_name)
+      back_text = calendar_events[0].start_time.strftime('%b %Y')
     fm.save(options.output_dir + uri(calendar_name),
             str(Template(file=tmpl,
                          searchList=[{"events": calendar_events,
