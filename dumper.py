@@ -8,6 +8,7 @@ import cStringIO
 import threading
 import urllib2
 
+import blogger
 import datastore
 import config
 import gcal
@@ -38,8 +39,7 @@ def main():
   for t in threads:
     events.extend(gcal.parse_feed(t.document))
 
-  news = tumblr.parse_rss(
-      urllib2.urlopen("http://stanfordhumanitiescenter.tumblr.com/rss"))
+  posts = blogger.GetPosts()
 
   store = datastore.load("database.db")
   store.update(events, news)
