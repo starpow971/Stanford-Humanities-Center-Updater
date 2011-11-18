@@ -10,7 +10,7 @@ import gdata.blogger.client
 import datetime
 
 class Post:
-  def __init__(self, content="", published=None, summary="", categories=""
+  def __init__(self, content="", published=None, summary="", categories="",
                id="", title="", updated=None):
     self.content = content
     self.published = published
@@ -26,9 +26,16 @@ def GetPosts():
   return [MakePost(post) for post in gdata_posts]
 
 
-
 def MakePost(gdata_post):
-  return Post(content=gdata_post.content, published=gdata_post.published,
+  pub_date = parse_date(gdata_post.published)
+  updated_date = parse_date(gdata_post.updated)
+  return Post(content=gdata_post.content, published=pub_date,
               summary=gdata_post.summary, categories=gdata_post.categories,
-              id=gdata_post.id, title=gdata_post.title, updated=gdata_post.updated)
+              id=gdata_post.id, title=gdata_post.title, updated=updated_date)
 
+def parse_date(date):
+  date_format = "%Y-%m-%dT%H:%M:%S"
+  date, weird_thing = date.split(".", 1)
+  date = datetime.datetime.strptime(date.encode('ascii', 'ignore'),
+                                    date_format)
+  return date
