@@ -7,6 +7,7 @@
 # produce useful blog objects.
 
 import gdata.blogger.client
+import datetime
 
 class Post:
   def __init__(self, content="", published=None, summary="", categories=""
@@ -27,6 +28,7 @@ def GetPosts():
 
 
 def MakePost(gdata_post):
-  return Post(content=content, published=published, summary=summary,
-              categories=categories, id=id, title=title, updated=updated)
+  return Post(content=gdata_post.content, published=gdata_post.published,
+              summary=gdata_post.summary, categories=gdata_post.categories,
+              id=gdata_post.id, title=gdata_post.title, updated=gdata_post.updated)
 
