@@ -9,6 +9,7 @@ import logging
 import sqlite3
 import time
 
+import blogger
 import gcal
 
 class DataStore:
@@ -27,12 +28,12 @@ class DataStore:
     self.conn = sqlite3.connect(filename)
     self.c = self.conn.cursor()
 
-  def update(self, events, news):
+  def update(self, events, post):
     """Updates a DataStore with new events and news.
 
     Args:
       events: A list of gcal.Event
-      news: A list of tumblr.Post"""
+      posts: A list of blogger.Post"""
 
     feed_events = dict([(e.event_id, e.updated) for e in events])
     query = ("select id, updated from events where id in (" +
@@ -42,12 +43,12 @@ class DataStore:
     new_events = set(feed_events.keys()) - set(already_have_events.keys())
 
 
-    rss_post_ids = set([p.post_id for p in news])
-    query = ("select id from news where id in (" +
-             ", ".join([str(id) for id in rss_post_ids]) + ")")
+    rss_p.ids = set([p.p.id for p in post])
+    query = ("select id from post where id in (" +
+             ", ".join([str(id) for id in rss_p.ids]) + ")")
     self.c.execute(query)
     already_have_posts = set([row[0] for row in self.c.fetchall()])
-    new_posts = rss_post_ids - already_have_posts
+    new_posts = rss_p.ids - already_have_posts
 
     # NOTE(scottrw): There are four cases to consider:
     # 1. old event not in feed. No action required from us, do nothing.
@@ -81,12 +82,22 @@ class DataStore:
                         ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
                         event.status, event.description, int(event.is_all_day), event.thumbnail,
                         event.full_image))
-    for post in news:
-      if post.post_id in already_have_posts:
-        continue
-      self.c.execute("insert into news values (?, ?, ?, ?, ?)",
-                     (post.post_id, post.post_title, ToTimestamp(post.post_date), post.post_content,
-                      post.post_category))
+    for post in posts:
+      if post.id in already_have_posts:
+        if already_have_posts[post.p.id] == post.updated:
+          continue
+        else:
+          logging.warning("Updating post %s" % post.p.id)
+          self.c.execute("update posts set updated=?, title=?, published=?, content=?, "
+                         "categories=?, summary=? "
+                         "where id=?",
+                        (ToTimestamp(post.updated), post.title, ToTimestamp(post.published),
+                         post.content, post.categories, post.summary, post.p.id))
+      else:
+       logging.warning("New post %s" % post.p.id)
+       self.c.execute("insert into posts values (?, ?, ?, ?, ?, ?, ?)",
+                      (post.p.id, ToTimestamp(post.updated), post.title, ToTimestamp(post.published),
+                       post.content, post.categories, post.summary))
 
   def CreateEventsFromResults(self):
     for row in self.c:
@@ -109,6 +120,19 @@ class DataStore:
     """Returns all of the events, inclusive, for archival purposes."""
     self.c.execute("select * from events order by start_time")
     return self.CreateEventsFromResults()
+
+
+  def CreatePostsFromResults(self):
+    for row in self.c:
+      p = blogger.Post(id=row[0], updated=datetime.datetime.fromtimestamp(row[1]),
+                       title=row[2], published=datetime.datetime.fromtimestamp(row[3]),
+                       content=row[4], categories=row[5], summary=row[6])
+      yield p
+
+  def GetAllPosts(self):
+    """Returns all of the posts, inclusive, for archival purposes."""
+    self.c.execute("select * from posts order by published")
+    return self.CreatePostsFromResults()
 
 
   def save(self):

@@ -42,7 +42,7 @@ def main():
   posts = blogger.GetPosts()
 
   store = datastore.load("database.db")
-  store.update(events, news)
+  store.update(events, posts)
   store.save()
   store.close()
 
