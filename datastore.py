@@ -28,7 +28,7 @@ class DataStore:
     self.conn = sqlite3.connect(filename)
     self.c = self.conn.cursor()
 
-  def update(self, events, post):
+  def update(self, events, posts):
     """Updates a DataStore with new events and news.
 
     Args:
@@ -43,9 +43,10 @@ class DataStore:
     new_events = set(feed_events.keys()) - set(already_have_events.keys())
 
 
-    rss_p.ids = set([p.p.id for p in post])
+    rss_post_ids = set([post.id for post in posts])
     query = ("select id from post where id in (" +
-             ", ".join([str(id) for id in rss_p.ids]) + ")")
+             ", ".join([str(id) for id in rss_post_ids]) + ")")
+    print query
     self.c.execute(query)
     already_have_posts = set([row[0] for row in self.c.fetchall()])
     new_posts = rss_p.ids - already_have_posts
