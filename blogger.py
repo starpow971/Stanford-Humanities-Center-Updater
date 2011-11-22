@@ -21,6 +21,18 @@ class Post:
     self.title = title
     self.updated = updated
 
+  def uri(self):
+    return "news-videos/news/%s-%s-%s-%s.html" % (self.published.year,
+            self.published.month, self.published.day, self.friendly_title())
+
+  def friendly_title(self):
+    title = re.sub(" +", "-", self.title.lower())
+    title = re.sub("[^-a-z0-9]", "", title)
+    return title
+
+  def yearmonth(self):
+    return datetime.datetime(self.published.year, self.published.month, 1)
+
   def __repr__(self):
     return ("\n<id: %(id)r\n "
             "updated: %(updated)r\n "

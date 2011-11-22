@@ -135,7 +135,7 @@ class DataStore:
 
   def GetAllPosts(self):
     """Returns all of the posts, inclusive, for archival purposes."""
-    self.c.execute("select * from posts order by published")
+    self.c.execute("select * from posts order by published desc")
     return self.CreatePostsFromResults()
 
 

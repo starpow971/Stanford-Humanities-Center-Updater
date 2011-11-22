@@ -16,6 +16,31 @@ import datastore
 import config
 import file_manager
 
+
+class PostFlipBook(self):
+  """Sets up the flipbooks for posts- yearmonths, tags, all posts."""
+  def __init__(self, uri, pretty_name):
+    self.uri = uri
+    self.pretty_name = pretty_name
+    self.posts = []
+
+  def render(self, fm):
+    pages = group(self.posts, 10)
+    for pg_num, posts in enumerate(pages):
+      tpl = self.page_uri(pg_num)
+    fm.save(tpl, searchList=[{"posts": posts}])
+
+  def page_uri(self, pg_num):
+    if pg_num == 0:
+      return "news-videos/news/index.html"
+    else:
+      return "news-videos/news/index" + pg_num + ".html"
+
+class FlipbookIndex(self):
+  def __init__(self, yearmonth, categories):
+    self.yearmonth = yearmonth
+    self.categories = categories
+
 def parse_args(argv):
   """Sets up the option parser and parses command line arguments.
 
@@ -48,6 +73,7 @@ def main(argv):
   # events left for the second template!
   events = list(ds.GetEventsInRange(start_date, end_date))
   all_events = list(ds.GetAllEvents())
+  all_posts =  list(ds.GetAllPosts())
 
 
   cal_months = {}
@@ -56,6 +82,10 @@ def main(argv):
   for event in all_events:
     cal_months.setdefault(event.calendar_title, {}).setdefault(event.yearmonth(), []).append(event)
     all_event_months.setdefault(event.yearmonth(), []).append(event)
+
+  all_posts_fb = PostFlipBook("news-videos/news/index.html", "All Posts")
+  for post in all_posts:
+    all_posts_fb.posts.append(post)
 
 
   calendar_urls = [(name, uri(name)) for name in config.calendar_ids.keys()]
@@ -66,6 +96,7 @@ def main(argv):
   WritePerMonthCalendars(options, fm, all_event_months, calendar_urls)
   WritePerMonthWorkshopCalendars(options, fm, all_event_months, calendar_urls)
   WritePerCalPerMonthCalendars(options, fm, cal_months, calendar_urls)
+  WritePostPages(options, fm, all_posts)
 
   #print fm.show_diff()
   fm.commit()
@@ -231,6 +262,14 @@ def friendly_title(calendar_title):
   title = re.sub("[^-a-z0-9]", "", title)
   return title
 
+
+def WritePostPages(options, fm, all_posts):
+  for post in all_posts:
+    tmpl = "news-template.tmpl"
+    fm.save(options.output_dir + post.uri(),
+            str(Template(file=tmpl,
+                         searchList=[{"post": post,
+                                      "title": post.title}])))
 
 if __name__ == "__main__":
   main(sys.argv)
