@@ -44,12 +44,12 @@ class DataStore:
     new_events = set(feed_events.keys()) - set(already_have_events.keys())
 
 
-    rss_post_ids = set([post.id for post in posts])
-    query = ("select id from posts where id in (" +
-             ", ".join([str(id) for id in rss_post_ids]) + ")")
+    rss_post_ids = dict([(post.id, post.updated) for post in posts])
+    query = ("select id, updated from posts where id in (" +
+             ", ".join([repr(id) for id in rss_post_ids]) + ")")
     self.c.execute(query)
-    already_have_posts = set([row[0] for row in self.c.fetchall()])
-    new_posts = rss_post_ids - already_have_posts
+    already_have_posts = dict(self.c.fetchall())
+    new_posts = set(rss_post_ids.keys()) - set(already_have_posts.keys())
 
     # NOTE(scottrw): There are four cases to consider:
     # 1. old event not in feed. No action required from us, do nothing.
@@ -66,7 +66,9 @@ class DataStore:
           continue
         else:
           # Must be a modified event... need to update database.
-          logging.warning("Updating event %s" % event.event_id)
+          logging.warning("Updating event %s (%s -> %s)" % (
+              event.event_id,
+              already_have_events[event.event_id], event.updated))
           self.c.execute("update events set updated=?, calendar_title=?, event_title=?, "
                          "start_time=?, end_time=?, location=?, status=?, description=?, "
                          "is_all_day=?, thumbnail=?, full_image=? "
@@ -88,16 +90,17 @@ class DataStore:
         if already_have_posts[post.id] == post.updated:
           continue
         else:
-          logging.warning("Updating post %s" % post.id)
+          logging.warning("Updating post %s (%r -> %r)" % (
+              post.id, already_have_posts[post.id], post.updated))
           self.c.execute("update posts set updated=?, title=?, published=?, content=?, "
                          "categories=?, summary=? "
                          "where id=?",
-                        (ToTimestamp(post.updated), post.title, ToTimestamp(post.published),
+                        (post.updated, post.title, ToTimestamp(post.published),
                          post.content, post.categories, post.summary, post.id))
       else:
        logging.warning("New post %s" % post.id)
        self.c.execute("insert into posts values (?, ?, ?, ?, ?, ?, ?)",
-                      (post.id, ToTimestamp(post.updated), post.title, ToTimestamp(post.published),
+                      (post.id, post.updated, post.title, ToTimestamp(post.published),
                        post.content, post.categories, post.summary))
 
   def CreateEventsFromResults(self):
@@ -125,7 +128,7 @@ class DataStore:
 
   def CreatePostsFromResults(self):
     for row in self.c:
-      p = blogger.Post(id=row[0], updated=datetime.datetime.fromtimestamp(row[1]),
+      p = blogger.Post(id=row[0], updated=row[1],
                        title=row[2], published=datetime.datetime.fromtimestamp(row[3]),
                        content=row[4], categories=row[5], summary=row[6])
       yield p

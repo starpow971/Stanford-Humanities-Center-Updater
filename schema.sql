@@ -7,5 +7,5 @@ create table events(id, updated TEXT, calendar_title TEXT, event_title TEXT, sta
                     is_all_day INTEGER, thumbnail TEXT, full_image TEXT);
 
 
-create table posts(id, updated INTEGER, title TEXT, published INTEGER, content TEXT, categories TEXT,
+create table posts(id, updated TEXT, title TEXT, published INTEGER, content TEXT, categories TEXT,
                    summary TEXT);

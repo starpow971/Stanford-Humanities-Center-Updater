@@ -46,7 +46,7 @@ def GetPosts():
 
 def MakePost(gdata_post):
   pub_date = parse_date(gdata_post.published.text)
-  updated_date = parse_date(gdata_post.updated.text)
+  updated_date = gdata_post.updated.text
   return Post(content=gdata_post.content.text, published=pub_date,
               summary=gdata_post.summary,
               categories=", ".join([c.term for c in gdata_post.category]), id=parse_id(gdata_post),
