@@ -6,6 +6,7 @@
 
 import datetime
 import logging
+import pprint
 import sqlite3
 import time
 
@@ -44,12 +45,11 @@ class DataStore:
 
 
     rss_post_ids = set([post.id for post in posts])
-    query = ("select id from post where id in (" +
+    query = ("select id from posts where id in (" +
              ", ".join([str(id) for id in rss_post_ids]) + ")")
-    print query
     self.c.execute(query)
     already_have_posts = set([row[0] for row in self.c.fetchall()])
-    new_posts = rss_p.ids - already_have_posts
+    new_posts = rss_post_ids - already_have_posts
 
     # NOTE(scottrw): There are four cases to consider:
     # 1. old event not in feed. No action required from us, do nothing.
@@ -85,19 +85,19 @@ class DataStore:
                         event.full_image))
     for post in posts:
       if post.id in already_have_posts:
-        if already_have_posts[post.p.id] == post.updated:
+        if already_have_posts[post.id] == post.updated:
           continue
         else:
-          logging.warning("Updating post %s" % post.p.id)
+          logging.warning("Updating post %s" % post.id)
           self.c.execute("update posts set updated=?, title=?, published=?, content=?, "
                          "categories=?, summary=? "
                          "where id=?",
                         (ToTimestamp(post.updated), post.title, ToTimestamp(post.published),
-                         post.content, post.categories, post.summary, post.p.id))
+                         post.content, post.categories, post.summary, post.id))
       else:
-       logging.warning("New post %s" % post.p.id)
+       logging.warning("New post %s" % post.id)
        self.c.execute("insert into posts values (?, ?, ?, ?, ?, ?, ?)",
-                      (post.p.id, ToTimestamp(post.updated), post.title, ToTimestamp(post.published),
+                      (post.id, ToTimestamp(post.updated), post.title, ToTimestamp(post.published),
                        post.content, post.categories, post.summary))
 
   def CreateEventsFromResults(self):

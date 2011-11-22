@@ -1,5 +1,5 @@
 drop table if exists events;
-drop table if exists news;
+drop table if exists posts;
 
 
 create table events(id, updated TEXT, calendar_title TEXT, event_title TEXT, start_time INTEGER,
@@ -8,4 +8,4 @@ create table events(id, updated TEXT, calendar_title TEXT, event_title TEXT, sta
 
 
 create table posts(id, updated INTEGER, title TEXT, published INTEGER, content TEXT, categories TEXT,
-                   summary TEXT)
+                   summary TEXT);

@@ -21,6 +21,23 @@ class Post:
     self.title = title
     self.updated = updated
 
+  def __repr__(self):
+    return ("\n<id: %(id)r\n "
+            "updated: %(updated)r\n "
+            "title: %(title)r\n "
+            "published: %(published)r\n "
+            "content: %(content)r\n "
+            "categories: %(categories)r\n "
+            "summary: %(summary)r\n "
+            ">") % {
+              'id': self.id,
+              'updated': self.updated,
+              'title': self.title,
+              'published': self.published,
+              'content': self.content,
+              'categories': self.categories,
+              'summary': self.summary}
+
 def GetPosts():
   client = gdata.blogger.client.BloggerClient()
   gdata_posts = client.GetPosts("3248988153222732762")
@@ -30,10 +47,10 @@ def GetPosts():
 def MakePost(gdata_post):
   pub_date = parse_date(gdata_post.published.text)
   updated_date = parse_date(gdata_post.updated.text)
-  return Post(content=gdata_post.content, published=pub_date,
+  return Post(content=gdata_post.content.text, published=pub_date,
               summary=gdata_post.summary,
-              categories=", ".join([c.term for c in gdata_post.category]), id=gdata_post.id,
-              title=gdata_post.title, updated=updated_date)
+              categories=", ".join([c.term for c in gdata_post.category]), id=parse_id(gdata_post),
+              title=gdata_post.title.text, updated=updated_date)
 
 
 def parse_date(date):
@@ -41,3 +58,9 @@ def parse_date(date):
   date, weird_thing = date.split(".", 1)
   date = datetime.datetime.strptime(date.encode('ascii', 'ignore'), date_format)
   return date
+
+def parse_id(gdata_post):
+  id = gdata_post.id.text
+  id_text, id = id.split("post-", 1)
+  id = int(id)
+  return id
