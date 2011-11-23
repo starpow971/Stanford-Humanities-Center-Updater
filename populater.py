@@ -27,14 +27,15 @@ class PostFlipBook(self):
   def render(self, fm):
     pages = group(self.posts, 10)
     for pg_num, posts in enumerate(pages):
-      tpl = self.page_uri(pg_num)
-    fm.save(tpl, searchList=[{"posts": posts}])
+      fm.save(self.page_uri(pg_num), Template(file="news-template.tmpl",
+              searchList=[{"posts": posts}])
 
   def page_uri(self, pg_num):
     if pg_num == 0:
-      return "news-videos/news/index.html"
+      return self.uri
     else:
-      return "news-videos/news/index" + pg_num + ".html"
+      path, extension = self.uri.rsplit(".", 1)
+      return path + "-" + pg_num + "." + extension
 
 class FlipbookIndex(self):
   def __init__(self, yearmonth, categories):
@@ -86,6 +87,7 @@ def main(argv):
   all_posts_fb = PostFlipBook("news-videos/news/index.html", "All Posts")
   for post in all_posts:
     all_posts_fb.posts.append(post)
+  all_posts_fb.render(fm)
 
 
   calendar_urls = [(name, uri(name)) for name in config.calendar_ids.keys()]
