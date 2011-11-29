@@ -9,6 +9,7 @@
 import gdata.blogger.client
 import datetime
 import pprint
+import re
 
 class Post:
   def __init__(self, content="", published=None, summary="", categories="",

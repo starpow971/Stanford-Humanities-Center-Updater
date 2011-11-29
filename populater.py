@@ -17,9 +17,9 @@ import config
 import file_manager
 
 
-class PostFlipBook(self):
+class PostFlipBook:
   """Sets up the flipbooks for posts- yearmonths, tags, all posts."""
-  def __init__(self, uri, pretty_name):
+  def __init__(self, uri="", pretty_name=""):
     self.uri = uri
     self.pretty_name = pretty_name
     self.posts = []
@@ -27,20 +27,24 @@ class PostFlipBook(self):
   def render(self, fm):
     pages = group(self.posts, 10)
     for pg_num, posts in enumerate(pages):
-      fm.save(self.page_uri(pg_num), Template(file="news-template.tmpl",
-              searchList=[{"posts": posts}])
+      fm.save(self.page_uri(pg_num), str(Template(file="news-template.tmpl",
+              searchList=[{"posts" : posts,
+                            "title": self.pretty_name}])))
 
   def page_uri(self, pg_num):
     if pg_num == 0:
       return self.uri
     else:
       path, extension = self.uri.rsplit(".", 1)
-      return path + "-" + pg_num + "." + extension
+      return path + "-" + str(pg_num) + "." + extension
 
-class FlipbookIndex(self):
+class FlipbookIndex:
   def __init__(self, yearmonth, categories):
     self.yearmonth = yearmonth
     self.categories = categories
+
+def group(lst, n):
+  return zip(*[lst[i::n] for i in range(n)])
 
 def parse_args(argv):
   """Sets up the option parser and parses command line arguments.
@@ -270,8 +274,12 @@ def WritePostPages(options, fm, all_posts):
     tmpl = "news-template.tmpl"
     fm.save(options.output_dir + post.uri(),
             str(Template(file=tmpl,
-                         searchList=[{"post": post,
-                                      "title": post.title}])))
+                         searchList=[{"posts" : posts,
+                                      "post": post,
+                                      "title": post.title,
+                                      "published" : post.published,
+                                      "content" : post.content,
+                                      "categories" : post.categories}])))
 
 if __name__ == "__main__":
   main(sys.argv)

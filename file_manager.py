@@ -100,4 +100,5 @@ class FileManager:
       if not self.env.CheckPath(dir):
         self.env.MakeDir(dir)
     for filename, content in self.files.iteritems():
+      print filename
       self.env.WriteFile(filename, content)
