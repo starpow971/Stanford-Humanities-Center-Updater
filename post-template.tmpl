@@ -7,7 +7,7 @@
 		<link rel="icon" href="http://shc.stanford.edu/favicon.ico" type="image/x-icon" />
 		<link rel="shortcut icon" href="http://shc.stanford.edu/favicon.ico" type="image/x-icon" />
 		
-		<title>News | Stanford Humanities Center</title>
+		<title>$post.title | Stanford Humanities Center</title>
 		
 		<link rel="stylesheet" type="text/css" media="screen" href="../../rw_common/themes/blueballfreestack/styles.css"  />
 		<link rel="stylesheet" type="text/css" media="screen" href="../../rw_common/themes/blueballfreestack/colourtag.css"  />
@@ -177,7 +177,7 @@ jQuery(document).ready(function ($) {
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_811_page111' class='stacks_out'><div id='stacks_in_811_page111' class='stacks_in'>
 <div id='stacks_out_813_page111' class='stacks_out'><div id='stacks_in_813_page111' class='stacks_in'>
-<div id="breadcrumbcontainer"><ul><li><a href="../../">Home</a>&nbsp;/&nbsp;</li><li><a href="../../news-videos/">News & Videos</a>&nbsp;/&nbsp;</li><li><a href="./">News Mockup Post</a>&nbsp;/&nbsp;</li></ul></div>
+<div id="breadcrumbcontainer"><ul><li><a href="../../">Home</a>&nbsp;/&nbsp;</li><li><a href="../../news-videos/">News & Videos</a>&nbsp;/&nbsp;</li><li><a href="./">$post.title</a>&nbsp;/&nbsp;</li></ul></div>
 
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_814_page111' class='stacks_out'><div id='stacks_in_814_page111' class='stacks_in'>
@@ -197,7 +197,9 @@ jQuery(document).ready(function ($) {
 
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_816_page111' class='stacks_out'><div id='stacks_in_816_page111' class='stacks_in'>
-<span style="font-size:14px; font-weight:bold; ">Archive</span><br /><br /><span style="color:#70694E;">September 2011<br />August 2011<br />July 2011<br />June 2011<br />May 2011<br />April 2011<br />March 2011<br />January 2011<br />December 2011<br />November 2011<br />October 2010<br />July 2010<br />June 2010<br />May 2010<br />April 2010<br />February 2010<br />November 2009<br />October 2009<br />August 2009<br />July 2009<br />June 2009<br />May 2009</span>
+<span style="font-size:14px; font-weight:bold; ">Archive</span><br /><br />
+	<!-- Put Archive links here-->
+	
 <div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
 </div>
@@ -238,10 +240,10 @@ jQuery(document).ready(function ($) {
 <!-- End Like It Stack -->
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_820_page111' class='stacks_out'><div id='stacks_in_820_page111' class='stacks_in'>
-	<h1>$title</h1><br />
-	$published<br /><br />
-	$content<br><br>
-	$categories
+	<h1>$post.title</h1><br />
+	$post.published.strftime("%B %d, %Y")<br /><br />
+	$post.content<br><br>
+	Tags: $post.categories
 	<div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_822_page111' class='stacks_out'><div id='stacks_in_822_page111' class='stacks_in'>
 <div class='stacks_div stacks_left'>

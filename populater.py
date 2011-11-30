@@ -24,19 +24,26 @@ class PostFlipBook:
     self.pretty_name = pretty_name
     self.posts = []
 
-  def render(self, fm):
-    pages = group(self.posts, 10)
-    for pg_num, posts in enumerate(pages):
-      fm.save(self.page_uri(pg_num), str(Template(file="news-template.tmpl",
+  def render(self, fm, options):
+    groups = group(self.posts, 10)
+    pagenums = range(len(groups))
+    pages = zip([None] + pagenums[:-1], pagenums, pagenums[1:] + [None], groups)
+    for next_pg_num, current_pg_num, back_pg_num, posts in pages:
+      fm.save(options.output_dir + self.page_uri(current_pg_num), str(Template(file="news-template.tmpl",
               searchList=[{"posts" : posts,
-                            "title": self.pretty_name}])))
+                           "pretty_name": self.pretty_name,
+                           "forward_url": next_pg_num is not None and self.page_uri(next_pg_num),
+                           "forward_text": "Newer Posts&raquo;",
+                           "back_url": back_pg_num is not None and self.page_uri(back_pg_num),
+                           "back_text": "Older Posts",
+                           "snippet": Snippet(post.content)}])))
 
-  def page_uri(self, pg_num):
-    if pg_num == 0:
+  def page_uri(self, current_pg_num):
+    if current_pg_num == 0:
       return self.uri
     else:
       path, extension = self.uri.rsplit(".", 1)
-      return path + "-" + str(pg_num) + "." + extension
+      return path + "-" + str(current_pg_num) + "." + extension
 
 class FlipbookIndex:
   def __init__(self, yearmonth, categories):
@@ -91,7 +98,7 @@ def main(argv):
   all_posts_fb = PostFlipBook("news-videos/news/index.html", "All Posts")
   for post in all_posts:
     all_posts_fb.posts.append(post)
-  all_posts_fb.render(fm)
+  all_posts_fb.render(fm, options)
 
 
   calendar_urls = [(name, uri(name)) for name in config.calendar_ids.keys()]
@@ -271,15 +278,20 @@ def friendly_title(calendar_title):
 
 def WritePostPages(options, fm, all_posts):
   for post in all_posts:
-    tmpl = "news-template.tmpl"
+    tmpl = "post-template.tmpl"
     fm.save(options.output_dir + post.uri(),
             str(Template(file=tmpl,
-                         searchList=[{"posts" : posts,
-                                      "post": post,
+                         searchList=[{"post" : post,
                                       "title": post.title,
                                       "published" : post.published,
                                       "content" : post.content,
                                       "categories" : post.categories}])))
+
+def Snippet(content):
+  image, content = post.content.split("</table>", 1)
+  sen1, sen2, other_con = content.split(".", 2)
+  snippet = ".".join([sen1, sen2])
+  return snippet
 
 if __name__ == "__main__":
   main(sys.argv)

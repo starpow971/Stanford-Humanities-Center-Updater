@@ -7,7 +7,7 @@
 		<link rel="icon" href="http://shc.stanford.edu/favicon.ico" type="image/x-icon" />
 		<link rel="shortcut icon" href="http://shc.stanford.edu/favicon.ico" type="image/x-icon" />
 		
-		<title>$title | Stanford Humanities Center</title>
+		<title>$pretty_name | Stanford Humanities Center</title>
 		
 		<link rel="stylesheet" type="text/css" media="screen" href="../../rw_common/themes/blueballfreestack/styles.css"  />
 		<link rel="stylesheet" type="text/css" media="screen" href="../../rw_common/themes/blueballfreestack/colourtag.css"  />
@@ -177,7 +177,7 @@ jQuery(document).ready(function ($) {
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_807_page110' class='stacks_out'><div id='stacks_in_807_page110' class='stacks_in'>
 <div id='stacks_out_809_page110' class='stacks_out'><div id='stacks_in_809_page110' class='stacks_in'>
-<div id="breadcrumbcontainer"><ul><li><a href="../../">Home</a>&nbsp;/&nbsp;</li><li><a href="../../news-videos/">News & Videos</a>&nbsp;/&nbsp;</li><li><a href="./">$title</a>&nbsp;/&nbsp;</li></ul></div>
+<div id="breadcrumbcontainer"><ul><li><a href="../../">Home</a>&nbsp;/&nbsp;</li><li><a href="../../news-videos/">News & Videos</a>&nbsp;/&nbsp;</li><li><a href="./">$pretty_name</a>&nbsp;/&nbsp;</li></ul></div>
 
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_810_page110' class='stacks_out'><div id='stacks_in_810_page110' class='stacks_in'>
@@ -249,15 +249,19 @@ jQuery(document).ready(function ($) {
 <div id='stacks_out_819_page110' class='stacks_out'>
 	<div id='stacks_in_819_page110' class='stacks_in'>
   #for $post in $posts
-  <span style="font-size:16px; color:#70694E;font-weight:bold; ">$title</span><br />
-  $published<br><br>
-  $content <!--Make it a summary? Exclude images-->
+  <a style="font-size:16px; font-weight:bold; "
+  href="../../$post.uri()">$post.title</a><br />
+  $post.published.strftime("%B %d, %Y")<br><br>
+  $Snippet(post.content) <!--Make it a summary? Exclude images-->
   <hr>
+  <br>
   #end for
-  <span style="font-size:16px; color:#70694E;font-weight:bold; ">$title</span><br />
-  $published<br><br>
-  $content<br><br>
-  Tags: $categories
+  #if $forward_url and $forward_text
+  <div style="float:right"><a href="../../$forward_url">$forward_text</a></div>
+  #end if
+  #if $back_url and $back_text
+  <div><a href="../../$back_url">&laquo;$back_text</a></div>
+  #end if
 	<div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
 </div>
