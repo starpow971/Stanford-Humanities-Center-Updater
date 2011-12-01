@@ -35,8 +35,7 @@ class PostFlipBook:
                            "forward_url": next_pg_num is not None and self.page_uri(next_pg_num),
                            "forward_text": "Newer Posts&raquo;",
                            "back_url": back_pg_num is not None and self.page_uri(back_pg_num),
-                           "back_text": "Older Posts",
-                           "snippet": Snippet(post.content)}])))
+                           "back_text": "Older Posts"}])))
 
   def page_uri(self, current_pg_num):
     if current_pg_num == 0:
@@ -287,11 +286,6 @@ def WritePostPages(options, fm, all_posts):
                                       "content" : post.content,
                                       "categories" : post.categories}])))
 
-def Snippet(content):
-  image, content = post.content.split("</table>", 1)
-  sen1, sen2, other_con = content.split(".", 2)
-  snippet = ".".join([sen1, sen2])
-  return snippet
 
 if __name__ == "__main__":
   main(sys.argv)
