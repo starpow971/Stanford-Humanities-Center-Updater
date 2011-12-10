@@ -120,9 +120,9 @@ def WriteUpcomingEvents(options, fm, events):
                        searchList=[{"events": events,
                                     "calendar_title": "Events Calendar",
                                     "forward_url": events and events[-1].start_time.strftime('%Y-%m.html'),
-                                    "forward_text": "All events for %s&raquo" % events[-1].start_time.strftime('%b %Y'),
+                                    "forward_text": events and "All events for %s&raquo" % events[-1].start_time.strftime('%b %Y'),
                                     "back_url": events and events[0].start_time.strftime('%Y-%m.html'),
-                                    "back_text": "All events for %s" % events[0].start_time.strftime('%b %Y')}])))
+                                    "back_text": events and "All events for %s" % events[0].start_time.strftime('%b %Y')}])))
 
 def WriteUpcomingWorkshops(options, fm, events, calendar_urls):
   fm.save(options.output_dir + "workshops/calendar/index.html",
