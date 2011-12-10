@@ -205,13 +205,11 @@ jQuery(document).ready(function ($) {
 <div id='stacks_out_29415_page102' class='stacks_out'><div id='stacks_in_29415_page102' class='stacks_in'>
 <span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />
 	Workshop Calendars:</span>
-	<span style="color:#70694E;"><br /><br />
-	<span style="color:#70694E;"><br /><br /><br />
-	#for name, uri in sorted($calendar_urls)<br />
-	#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center"<br />
+	#for $name, $uri in sorted($calendar_urls)
+	#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center"
 	<a href="../../$uri">$name</a><br><br>
 	#end if
-	#end for<br /></span>
+	#end for<br />
 <div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
 </div>
@@ -238,8 +236,10 @@ jQuery(document).ready(function ($) {
 	#if $event.start_time.strftime("%p") != $event.end_time.strftime("%p")
 	$event.start_time.strftime("%p")
 	#end if
-$event.end_time.strftime("-%I:%M %p") | $event.location<br><brstyle="clear:both"/>
+	$event.end_time.strftime("-%I:%M %p") | $event.location<br><brstyle="clear:both"/>
 <hr><br></span>
+	#end if
+	#end if
 	#end for
 	#if $forward_url and $forward_text
 	<div style="float:right"><a href="$forward_url">$forward_text</a></div>
