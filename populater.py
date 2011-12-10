@@ -119,9 +119,9 @@ def WriteUpcomingEvents(options, fm, events):
           str(Template(file="calendar-landing-page.tmpl",
                        searchList=[{"events": events,
                                     "calendar_title": "Events Calendar",
-                                    "forward_url": events[-1].start_time.strftime('%Y-%m.html'),
+                                    "forward_url": events and events[-1].start_time.strftime('%Y-%m.html'),
                                     "forward_text": "All events for %s&raquo" % events[-1].start_time.strftime('%b %Y'),
-                                    "back_url": events[0].start_time.strftime('%Y-%m.html'),
+                                    "back_url": events and events[0].start_time.strftime('%Y-%m.html'),
                                     "back_text": "All events for %s" % events[0].start_time.strftime('%b %Y')}])))
 
 def WriteUpcomingWorkshops(options, fm, events, calendar_urls):
