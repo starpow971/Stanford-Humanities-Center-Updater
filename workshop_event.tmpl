@@ -229,7 +229,7 @@ jQuery(document).ready(function ($) {
 	${event.end_time.strftime("-%I:%M %p")}
 	#end if
 	| $event.location<br /><br />
-	$event.description<br /><hr><br /></span>
+	$event.description.replace("\n", "<br>")<br /><hr><br /></span>
 
 
 <div class='stacks_clearer'></div></div></div>

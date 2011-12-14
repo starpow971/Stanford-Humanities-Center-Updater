@@ -234,7 +234,7 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
 	#if $event.full_image
 		<img src="$event.full_image" style="padding: 5 px" /> <br>
 	#end if
-	$event.description<br /><hr><br /></span>
+	$event.description.replace("\n", "<br>")<br /><hr><br /></span>
 <div class='stacks_clearer'></div></div></div>
 <div id='stacks_out_1563_page108' class='stacks_out'><div id='stacks_in_1563_page108' class='stacks_in'>
 <!-- Like It Stack v1.1.0 by Joe Workman -->
