@@ -32,12 +32,14 @@ class PostFlipBook:
       fm.save(options.output_dir + self.page_uri(current_pg_num), str(Template(file="news-template.tmpl",
               searchList=[{"posts" : posts,
                            "pretty_name": self.pretty_name,
-                           "forward_url": next_pg_num is not None and self.page_uri(next_pg_num),
+                           "forward_url": self.page_uri(next_pg_num),
                            "forward_text": "Newer Posts&raquo;",
-                           "back_url": back_pg_num is not None and self.page_uri(back_pg_num),
+                           "back_url": self.page_uri(back_pg_num),
                            "back_text": "Older Posts"}])))
 
   def page_uri(self, current_pg_num):
+    if current_pg_num is None:
+      return None
     if current_pg_num == 0:
       return self.uri
     else:
