@@ -79,12 +79,9 @@ def main(argv):
   start_date = datetime.datetime.now()
   end_date = start_date + datetime.timedelta(31)
 
-  # NOTE(scottrw): the list() function is necessary because GetEventsInRange
-  # returns a generator, which is exhausted by the first template, leaving no
-  # events left for the second template!
-  events = list(ds.GetEventsInRange(start_date, end_date))
-  all_events = list(ds.GetAllEvents())
-  all_posts =  list(ds.GetAllPosts())
+  events = ds.GetEventsInRange(start_date, end_date)
+  all_events = ds.GetAllEvents()
+  all_posts = ds.GetAllPosts()
 
 
   cal_months = {}

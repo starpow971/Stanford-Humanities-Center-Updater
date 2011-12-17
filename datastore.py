@@ -104,14 +104,20 @@ class DataStore:
                        post.content, post.categories, post.summary))
 
   def CreateEventsFromResults(self):
-    for row in self.c:
-      e = gcal.Event(event_id=row[0], updated=row[1], calendar_title=row[2],
-                     event_title=row[3], start_time=datetime.datetime.fromtimestamp(row[4]),
-                     end_time=datetime.datetime.fromtimestamp(row[5]),
-                     location=row[6] or "", status=row[7], description=row[8] or "",
-                     is_all_day=bool(row[9]), thumbnail=row[10] or None, full_image=row[11] or None)
-      if e.status != "canceled":
-        yield e
+    return [
+        gcal.Event(event_id=row[0],
+                   updated=row[1],
+                   calendar_title=row[2],
+                   event_title=row[3],
+                   start_time=datetime.datetime.fromtimestamp(row[4]),
+                   end_time=datetime.datetime.fromtimestamp(row[5]),
+                   location=row[6] or "",
+                   status=row[7],
+                   description=row[8] or "",
+                   is_all_day=bool(row[9]),
+                   thumbnail=row[10] or None,
+                   full_image=row[11] or None)
+        for row in self.c if row[7] != "canceled"]
 
   def GetEventsInRange(self, start_date, end_date):
     """Returns a list of events in the date range, inclusive."""
@@ -127,11 +133,15 @@ class DataStore:
 
 
   def CreatePostsFromResults(self):
-    for row in self.c:
-      p = blogger.Post(id=row[0], updated=row[1],
-                       title=row[2], published=datetime.datetime.fromtimestamp(row[3]),
-                       content=row[4], categories=row[5], summary=row[6])
-      yield p
+    return [
+        blogger.Post(id=row[0],
+                     updated=row[1],
+                     title=row[2],
+                     published=datetime.datetime.fromtimestamp(row[3]),
+                     content=row[4],
+                     categories=row[5],
+                     summary=row[6])
+        for row in self.c]
 
   def GetAllPosts(self):
     """Returns all of the posts, inclusive, for archival purposes."""
