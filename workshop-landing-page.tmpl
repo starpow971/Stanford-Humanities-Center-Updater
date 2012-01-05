@@ -203,7 +203,7 @@ jQuery(document).ready(function ($) {
 </div>
 <div class='stacks_div stacks_right'>
 <div id='stacks_out_29386_page102' class='stacks_out'><div id='stacks_in_29386_page102' class='stacks_in'>
-<span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /></span><br /><br /><br />
+<span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /></span><br /><br />
 	#for name, uri in sorted($calendar_urls)
 	#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center"
 	<a href="../../$uri">$name</a><br><br>
@@ -226,17 +226,18 @@ jQuery(document).ready(function ($) {
 	#end if
 	#for $event in $events
 	#if $event.calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center")
-	<span style="font-size:11px;">$event.calendar_title.upper()</span><br>
+	<span style="font-size:11px;">$event.calendar_title.upper()</span>
 	<a style="font-size:14px; font-weight:bold;" href="../../$event.uri()">$event.event_title</a>
 	<span style="font-size:13px;"><br>
 	#if $event.is_all_day
 	$event.start_time.strftime("%A %B %d, %Y")
 	#else
-	$event.start_time.strftime("%A %B %d, %Y | %I:%M")
+$event.start_time.strftime("%A %B %d, %Y | %I:%M")
 	#if $event.start_time.strftime("%p") != $event.end_time.strftime("%p")
 	$event.start_time.strftime("%p")
 	#end if
-	$event.end_time.strftime("- %I:%M %p") | $event.location<br><br style="clear:both"/>
+	$event.end_time.strftime("- %I:%M %p")
+	| $event.location<br><br style="clear:both"/>
 <hr><br></span>
 	#end if
 	#end if
