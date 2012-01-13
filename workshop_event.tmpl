@@ -205,7 +205,13 @@ jQuery(document).ready(function ($) {
 </div>
 <div class='stacks_div stacks_right'>
 <div id='stacks_out_1516_page28' class='stacks_out'><div id='stacks_in_1516_page28' class='stacks_in'>
-<span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /></span><br /><br /><br />#for name, uri in sorted($calendar_urls)<br />#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center"<br /><a href="../../$uri">$name</a><br><br><br />#end if<br />#end for<span style="color:#70694E;"><br /></span>
+<span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /></span><br /><br /><br />
+	#for name, uri in sorted($calendar_urls)
+	#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center" and $name != "Test SHC Calendar" and $name != "Test Workshop Calendar"
+	<a href="../../$uri">$name</a><br><br>
+	#end if
+	#end for
+	<span style="color:#70694E;"><br /></span>
 <div class='stacks_clearer'></div></div></div>
 <div class='stacks_clearer'></div>
 </div>
