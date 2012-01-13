@@ -229,7 +229,7 @@ jQuery(document).ready(function ($) {
 	#end if
 	#for $event in $events
 	#if $event.calendar_title not in ("Stanford Humanities Center Events", "Co-sponsored Events Held at the Humanities Center", "Test SHC Calendar", "Test Workshop Calendar")
-	<span style="font-size:11px;">$event.calendar_title.upper()</span>
+	<span style="font-size:11px;">$event.calendar_title.upper()<br></span>
 	<a style="font-size:14px; font-weight:bold;" href="../../$event.uri()">$event.event_title</a>
 <span style="font-size:13px;"><br>
 	#if $event.is_all_day
