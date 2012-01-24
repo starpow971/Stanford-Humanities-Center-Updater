@@ -223,9 +223,8 @@ All events take place at Stanford University, unless otherwise noted.<br /><br /
 	$event.start_time.strftime("%A %B %d, %Y | %I:%M")
 	#if $event.start_time.strftime("%p") != $event.end_time.strftime("%p")
 	$event.start_time.strftime("%p")
-	#end
-	if
-$event.end_time.strftime("-%I:%M %p")
+	#end if
+	$event.end_time.strftime("-%I:%M %p")
 | $event.location<br><br style="clear:both"/>
 	<hr>
 <br></span>
@@ -235,7 +234,7 @@ $event.end_time.strftime("-%I:%M %p")
 	#if $forward_url and $forward_text
 	<div id="bottomnext" style="float:right"><a href="$forward_url">$forward_text</a></div>
 	#end if
-#if $back_url and $back_text
+	#if $back_url and $back_text
 	<div id="bottomback"><a href="$back_url">&laquo;$back_text</a></div>
 	#end if
 	<div class='stacks_clearer'></div></div></div>
