@@ -4,10 +4,14 @@
 # Description: interface with calendar server, parse calendar responses,
 # produce useful event objects.
 
+import collections
 import datetime
 import re
 import logging
 import xml.etree.ElementTree as ET
+
+
+#Event = collections.namedtuple('Event', 'calendar_title, event_title, event_id, start_time, end_time, location, status, description, updated, is_all_day, thumbnail, full_image'
 
 
 class Event:

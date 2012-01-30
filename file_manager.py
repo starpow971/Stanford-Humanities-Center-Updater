@@ -89,6 +89,12 @@ class FileManager:
       summary = "No changes."
     return summary + diffs
 
+  def HasFile(self, filename):
+    return filename in self.files
+
+  def GetFile(self, filename):
+    return self.files[filename]
+
   def commit(self):
     """Writes your changes to disk."""
     dirs = set([os.path.dirname(file) for file in self.files.iterkeys()])

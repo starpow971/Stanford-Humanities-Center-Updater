@@ -31,8 +31,8 @@ def main():
   gcal_template = (
       "http://www.google.com/calendar/feeds/%s/public/basic?"
       "showdeleted=true&updated-min=2011-08-01T01:00:00-08:00&max-results=1000")
-  threads = [FetchThread(gcal_template % cal_id)
-             for cal_id in config.calendar_ids.itervalues()]
+  threads = [FetchThread(gcal_template % cal.calendar_id)
+             for cal in config.calendar_ids]
   map(FetchThread.start, threads)  # Do work.
   map(FetchThread.join, threads)  # Wait for work to end.
   events = []
