@@ -173,7 +173,8 @@ class CalendarFlipBook:
                                       "forward_url": forward_url,
                                       "forward_text": forward_text,
                                       "back_url": back_url,
-                                      "back_text": back_text}])))
+                                      "back_text": back_text,
+                                      "minical_uri": None}])))
 
   def WritePerMonthCalendars(self, options, fm, calendars):
     month_events = sorted(self.events.items())
@@ -194,7 +195,8 @@ class CalendarFlipBook:
                                         "back_text": back and back.strftime ('%b %Y'),
                                         "forward_url": forward and "../../" + self.month_uri(forward),
                                         # TODO(chris): Put &raquo; in the template
-                                        "forward_text": forward and forward.strftime('%b %Y') + "&raquo;"}])))
+                                        "forward_text": forward and forward.strftime('%b %Y') + "&raquo;",
+                                        "minical_uri": None}])))
 
   def AddEvent(self, event, start_date, end_date):
     self.events.setdefault(
@@ -281,8 +283,8 @@ def SanityCheck(fm, options):
   assert fm.HasFile(options.output_dir + "events/calendar/2012-1-10-location-only-event.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-1-11-multi-day-workshop-event.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-1-11-multi-day-event.html")
-  assert fm.HasFile(options.output_dir + "events/calendar/2012-1-14-event-to-be-changed.html")
-  assert fm.HasFile(options.output_dir + "events/calendar/2012-1-14-workshop-event-to-be-changed.html")
+  #assert fm.HasFile(options.output_dir + "events/calendar/2012-1-14-event-to-be-changed.html")
+  #assert fm.HasFile(options.output_dir + "events/calendar/2012-1-14-workshop-event-to-be-changed.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-3-29-far-away-shc-event.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-3-30-far-away-workshop-event.html")
 
