@@ -227,6 +227,14 @@ class CalendarFlipBook:
       return yearmonth.strftime("workshops/calendar/%Y-%m.html")
     else:
       return yearmonth.strftime("events/calendar/%%Y-%%m-%s.html" % friendly_title(self.calendar_name))
+      
+  def minical_uri(self, yearmonth):
+    if self.calendar_name == "Events Calendar":
+      return yearmonth.strftime("events/calendar/%Y-%m.mini.html")
+    if self.calendar_name == "Workshop Calendar":
+      return yearmonth.strftime("workshops/calendar/%Y-%m.mini.html")
+    else:
+      return yearmonth.strftime("events/calendar/%%Y-%%m-%s.mini.html" % friendly_title(self.calendar_name))
 
 def friendly_title(calendar_name):
   title = re.sub(" +", "-", calendar_name.lower())
