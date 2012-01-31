@@ -71,6 +71,10 @@ def parse_args(argv):
                 help="Output generated files under DIR",
                 metavar="DIR",
                 default="/Library/Server/Web/Data/Sites/Default/")
+  op.add_option("-t", "--test-date", dest="test_date",
+                action="store_true",
+                help="Force the date to 2012-01-31 for testing",
+                default=False)
   options, args = op.parse_args(argv[1:])
   if not options.output_dir.endswith("/"):
     options.output_dir += "/"
@@ -89,6 +93,8 @@ def main(argv):
   ds = datastore.DataStore("database.db")
 
   start_date = datetime.datetime.now()
+  if options.test_date:
+    start_date = datetime.datetime(2012, 01, 31, 8, 25)
   end_date = start_date + datetime.timedelta(31)
 
   all_events = CalendarFlipBook(calendar_name="Events Calendar",
@@ -120,7 +126,7 @@ def main(argv):
     flipbooks[event.calendar_title].AddEvent(event, start_date, end_date)
 
   for calendar in calendars:
-    calendar.WriteUpcomingEvents(options, fm, calendars)
+    calendar.WriteUpcomingEvents(options, fm, calendars, start_date)
     calendar.WritePerMonthCalendars(options, fm, calendars)
 
   WriteEventPages(options, fm, events, calendars)  # Move me last
@@ -132,7 +138,8 @@ def main(argv):
     all_posts_fb.posts.append(post)
   all_posts_fb.render(fm, options)
 
-  SanityCheck(fm, options)
+  if options.test_date:
+    SanityCheck(fm, options)
 
   #print fm.show_diff()
   fm.commit()
@@ -155,11 +162,16 @@ class CalendarFlipBook:
   def __repr__(self):
     return "<Calendar %r>" % self.calendar_name
 
-  def WriteUpcomingEvents(self, options, fm, calendars):
+  def WriteUpcomingEvents(self, options, fm, calendars, today):
     forward_url = self.next_date and "../../" + self.month_uri(self.next_date)
     forward_text = forward_url and self.next_date.strftime('%b %Y') + "&raquo;"
     back_url = self.back_date and "../../" + self.month_uri(self.back_date)
     back_text = back_url and self.back_date.strftime('%b %Y')
+    minical_uri = "../../" + self.minical_uri(today)
+    # TESTING CODE
+    print "Saving", options.output_dir + self.minical_uri(today)
+    fm.save(options.output_dir + self.minical_uri(today), "I'm a minical for %r" % today)
+    
     fm.save(self.landing_page_uri,
             str(Template(file=self.landing_page_template,
                          searchList=[{"events": self.upcoming,
@@ -174,7 +186,7 @@ class CalendarFlipBook:
                                       "forward_text": forward_text,
                                       "back_url": back_url,
                                       "back_text": back_text,
-                                      "minical_uri": None}])))
+                                      "minical_uri": minical_uri}])))
 
   def WritePerMonthCalendars(self, options, fm, calendars):
     month_events = sorted(self.events.items())
@@ -204,8 +216,8 @@ class CalendarFlipBook:
                           event.start_time.month,
                           1),
         []).append(event)
-    now = datetime.datetime.now()
-    end = now + datetime.timedelta(days=31)
+    now = start_date
+    end = end_date
     if event.start_time >= now and event.start_time <= end:
       self.upcoming.append(event)
     if event.start_time < now:
@@ -374,6 +386,8 @@ def SanityCheck(fm, options):
   assert dom.xpath('//div[@id = "bottomback"]')
   MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].get('href'), "../../events/calendar/2012-01-test-workshop-calendar.html")
   MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].text, u"\xabJan 2012")
+  
+  # TODO(chris): Add assertions for the <iframe> src. (Add an id to the iframe). Add assertions for the existence of the minicals
 
 if __name__ == "__main__":
   main(sys.argv)
