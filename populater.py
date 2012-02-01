@@ -169,7 +169,6 @@ class CalendarFlipBook:
     back_text = back_url and self.back_date.strftime('%b %Y')
     minical_uri = "../../" + self.minical_uri(today)
     # TESTING CODE
-    print "Saving", options.output_dir + self.minical_uri(today)
     fm.save(options.output_dir + self.minical_uri(today), "I'm a minical for %r" % today)
     
     fm.save(self.landing_page_uri,
@@ -195,9 +194,7 @@ class CalendarFlipBook:
                                                   [None] + months[:-1],
                                                   months[1:] + [None]):
       per_month_name = self.title_prefix + yearmonth.strftime(" For %B %Y")
-      #print options.output_dir + month_uri(yearmonth, self.calendar_name)
-      #Render a calendar template into the right file
-      #print self.calendar_name
+      minical_uri = "../../" + self.minical_uri(yearmonth)
       fm.save(options.output_dir + self.month_uri(yearmonth),
               str(Template(file=self.landing_page_template,
                             searchList=[{"events": events,
@@ -208,7 +205,7 @@ class CalendarFlipBook:
                                         "forward_url": forward and "../../" + self.month_uri(forward),
                                         # TODO(chris): Put &raquo; in the template
                                         "forward_text": forward and forward.strftime('%b %Y') + "&raquo;",
-                                        "minical_uri": None}])))
+                                        "minical_uri": minical_uri}])))
 
   def AddEvent(self, event, start_date, end_date):
     self.events.setdefault(
