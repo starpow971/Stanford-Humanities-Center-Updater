@@ -195,6 +195,7 @@ class CalendarFlipBook:
                                                   months[1:] + [None]):
       per_month_name = self.title_prefix + yearmonth.strftime(" For %B %Y")
       minical_uri = "../../" + self.minical_uri(yearmonth)
+      fm.save(options.output_dir + self.minical_uri(yearmonth), "I'm a minical for %r" % yearmonth)
       fm.save(options.output_dir + self.month_uri(yearmonth),
               str(Template(file=self.landing_page_template,
                             searchList=[{"events": events,
@@ -385,6 +386,7 @@ def SanityCheck(fm, options):
   MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].text, u"\xabJan 2012")
   
   # TODO(chris): Add assertions for the <iframe> src. (Add an id to the iframe). Add assertions for the existence of the minicals
+  # Add assertions for per month landing pages- links and titles. (2012-05.html)
 
 if __name__ == "__main__":
   main(sys.argv)
