@@ -170,7 +170,7 @@ class CalendarFlipBook:
     minical_uri = "../../" + self.minical_uri(today)
     # TESTING CODE
     fm.save(options.output_dir + self.minical_uri(today), "I'm a minical for %r" % today)
-    
+
     fm.save(self.landing_page_uri,
             str(Template(file=self.landing_page_template,
                          searchList=[{"events": self.upcoming,
@@ -237,7 +237,7 @@ class CalendarFlipBook:
       return yearmonth.strftime("workshops/calendar/%Y-%m.html")
     else:
       return yearmonth.strftime("events/calendar/%%Y-%%m-%s.html" % friendly_title(self.calendar_name))
-      
+
   def minical_uri(self, yearmonth):
     if self.calendar_name == "Events Calendar":
       return yearmonth.strftime("events/calendar/%Y-%m.mini.html")
@@ -384,7 +384,24 @@ def SanityCheck(fm, options):
   assert dom.xpath('//div[@id = "bottomback"]')
   MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].get('href'), "../../events/calendar/2012-01-test-workshop-calendar.html")
   MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].text, u"\xabJan 2012")
-  
+
+  feb_landing_page = fm.GetFile(options.output_dir + "events/calendar/2012-02.html")
+  dom = etree.HTML(feb_landing_page)
+  MyAssert(dom.xpath('//title')[0].text,'Events For February 2012 | Stanford Humanities Center')
+  assert dom.xpath('//div[@id = "topnext"]')
+  MyAssert(dom.xpath('//div[@id = "topnext"]/a')[0].get('href'), "../../events/calendar/2012-03.html")
+  MyAssert(dom.xpath('//div[@id = "topnext"]/a')[0].text, u"Mar 2012\xbb")
+  assert dom.xpath('//div[@id = "topback"]')
+  MyAssert(dom.xpath('//div[@id = "topback"]/a')[0].get('href'), "../../events/calendar/2012-01.html")
+  MyAssert(dom.xpath('//div[@id = "topback"]/a')[0].text, u"\xabJan 2012")
+  assert dom.xpath('//div[@id = "bottomnext"]')
+  MyAssert(dom.xpath('//div[@id = "bottomnext"]/a')[0].get('href'), "../../events/calendar/2012-03.html")
+  MyAssert(dom.xpath('//div[@id = "bottomnext"]/a')[0].text, u"Mar 2012\xbb")
+  assert dom.xpath('//div[@id = "bottomback"]')
+  MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].get('href'), "../../events/calendar/2012-01-test-workshop-calendar.html")
+  MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].text, u"\xabJan 2012")
+
+
   # TODO(chris): Add assertions for the <iframe> src. (Add an id to the iframe). Add assertions for the existence of the minicals
   # Add assertions for per month landing pages- links and titles. (2012-05.html)
 
