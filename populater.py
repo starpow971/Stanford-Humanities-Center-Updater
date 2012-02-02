@@ -220,7 +220,7 @@ class CalendarFlipBook:
         []).append(event)
     now = start_date
     end = end_date
-    
+
     if event.start_time >= now and event.start_time <= end:
       self.upcoming.append(event)
     if event.start_time < now:
@@ -293,13 +293,19 @@ def SanityCheck(fm, options):
   assert fm.HasFile(options.output_dir + "events/calendar/index.html")
   assert fm.HasFile(options.output_dir + "workshops/calendar/index.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-02.html")
+  assert fm.HasFile(options.output_dir + "events/calendar/2012-02.mini.html")
   assert fm.HasFile(options.output_dir + "workshops/calendar/2012-02.html")
+  assert fm.HasFile(options.output_dir + "workshops/calendar/2012-02.mini.html")
   assert fm.HasFile(options.output_dir + "events/calendar/test-shc-calendar.html")
   assert fm.HasFile(options.output_dir + "workshops/calendar/test-workshop-calendar.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-01-test-shc-calendar.html")
+  assert fm.HasFile(options.output_dir + "events/calendar/2012-01-test-shc-calendar.mini.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-03-test-shc-calendar.html")
+  assert fm.HasFile(options.output_dir + "events/calendar/2012-03-test-shc-calendar.mini.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-01-test-workshop-calendar.html")
+  assert fm.HasFile(options.output_dir + "events/calendar/2012-01-test-workshop-calendar.mini.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-03-test-workshop-calendar.html")
+  assert fm.HasFile(options.output_dir + "events/calendar/2012-03-test-workshop-calendar.mini.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-1-9-all-day-event.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-1-9-all-day-workshop-event.html")
   assert fm.HasFile(options.output_dir + "events/calendar/2012-1-10-location-only-workshop-event.html")
@@ -406,9 +412,22 @@ def SanityCheck(fm, options):
   MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].get('href'), "../../events/calendar/2012-01.html")
   MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].text, u"\xabJan 2012")
 
+  feb_workshop_page = fm.GetFile(options.output_dir + "workshops/calendar/2012-02.html")
+  dom = etree.HTML(feb_workshop_page)
+  MyAssert(dom.xpath('//title')[0].text,'Workshop Events For February 2012 | Stanford Humanities Center')
+  assert dom.xpath('//div[@id = "topnext"]')
+  MyAssert(dom.xpath('//div[@id = "topnext"]/a')[0].get('href'), "../../workshops/calendar/2012-03.html")
+  MyAssert(dom.xpath('//div[@id = "topnext"]/a')[0].text, u"Mar 2012\xbb")
+  assert dom.xpath('//div[@id = "topback"]')
+  MyAssert(dom.xpath('//div[@id = "topback"]/a')[0].get('href'), "../../workshops/calendar/2012-01.html")
+  MyAssert(dom.xpath('//div[@id = "topback"]/a')[0].text, u"\xabJan 2012")
+  assert dom.xpath('//div[@id = "bottomnext"]')
+  MyAssert(dom.xpath('//div[@id = "bottomnext"]/a')[0].get('href'), "../../workshops/calendar/2012-03.html")
+  MyAssert(dom.xpath('//div[@id = "bottomnext"]/a')[0].text, u"Mar 2012\xbb")
+  assert dom.xpath('//div[@id = "bottomback"]')
+  MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].get('href'), "../../workshops/calendar/2012-01.html")
+  MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].text, u"\xabJan 2012")
 
   # TODO(chris): Add assertions for the <iframe> src. (Add an id to the iframe). Add assertions for the existence of the minicals
-  # Add assertions for per month landing pages- links and titles. (2012-05.html)
-
 if __name__ == "__main__":
   main(sys.argv)
