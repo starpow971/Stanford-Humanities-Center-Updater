@@ -99,10 +99,12 @@ def main(argv):
 
   all_events = CalendarFlipBook(calendar_name="Events Calendar",
                                 landing_page_template="calendar-landing-page.tmpl",
-                                landing_page_uri=options.output_dir + "events/calendar/index.html")
+                                landing_page_uri=options.output_dir + "events/calendar/index.html",
+                                title_prefix="Events")
   all_workshops = CalendarFlipBook(calendar_name="Workshop Calendar",
                                    landing_page_template="workshop-landing-page.tmpl",
-                                   landing_page_uri=options.output_dir + "workshops/calendar/index.html")
+                                   landing_page_uri=options.output_dir + "workshops/calendar/index.html",
+                                   title_prefix="Workshop Events")
 
   flipbooks = {} #calendar_name -> flipbook
   #fix calendar_name and template.
@@ -398,7 +400,7 @@ def SanityCheck(fm, options):
   MyAssert(dom.xpath('//div[@id = "bottomnext"]/a')[0].get('href'), "../../events/calendar/2012-03.html")
   MyAssert(dom.xpath('//div[@id = "bottomnext"]/a')[0].text, u"Mar 2012\xbb")
   assert dom.xpath('//div[@id = "bottomback"]')
-  MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].get('href'), "../../events/calendar/2012-01-test-workshop-calendar.html")
+  MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].get('href'), "../../events/calendar/2012-01.html")
   MyAssert(dom.xpath('//div[@id = "bottomback"]/a')[0].text, u"\xabJan 2012")
 
 
