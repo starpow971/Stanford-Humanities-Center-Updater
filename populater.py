@@ -160,6 +160,8 @@ class CalendarFlipBook:
     self.upcoming = []
     self.next_date = None
     self.back_date = None
+    self.earliest_date = None
+    self.latest_date = None
 
   def __repr__(self):
     return "<Calendar %r>" % self.calendar_name
@@ -218,6 +220,7 @@ class CalendarFlipBook:
         []).append(event)
     now = start_date
     end = end_date
+    
     if event.start_time >= now and event.start_time <= end:
       self.upcoming.append(event)
     if event.start_time < now:
