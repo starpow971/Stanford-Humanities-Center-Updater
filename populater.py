@@ -220,26 +220,14 @@ class CalendarFlipBook:
         []).append(event)
     now = start_date
     end = end_date
-    if self.latest_date is None:
-      self.latest_date = event.start_time
-    if self.earliest_date is None:
-      self.earliest_date = event.start_time
-    if event.start_time > self.latest_date:
-      self.latest_date = event.start_time
-    if event.start_time < self.earliest_date:
-      self.earliest_date = event.start_time
+    self.latest_date = max(self.latest_date or event.start_time, event.start_time)
+    self.earliest_date = min(self.earliest_date or event.start_time, event.start_time)
     if event.start_time >= now and event.start_time <= end:
       self.upcoming.append(event)
     if event.start_time < now:
-      if not self.back_date:
-        self.back_date = event.start_time
-      else:
-        self.back_date = max(self.back_date, event.start_time)
+      self.back_date = max(self.back_date or event.start_time, event.start_time)
     if event.start_time > end:
-      if not self.next_date:
-        self.next_date = event.start_time
-      else:
-        self.next_date = min(self.next_date, event.start_time)
+      self.next_date = min(self.next_date or event.start_time, event.start_time)
 
 
   def month_uri(self, yearmonth):
