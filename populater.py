@@ -20,6 +20,16 @@ import config
 import file_manager
 
 # TODO: Figure out why it creates pages with no events (per month calendars).
+# TODO: Remove workshop events from Events Calendar.
+# Known issues:
+# Doesn't line break in event descriptions. (I thought we had fixed that?)
+# Creates pages with no events- if another calendar has events in those months. Workshop landing page only?
+# Title not displaying correctly. Displays "Event Calendar" or "Workshop Calendar" all the time.
+# Per Month Landing Cals: "Events For March 2012" or "Workshop Events For 2012"
+# Per Month Indiv Cals: "Stanford Humanities Center Events For March 2012"
+# Indiv Cals landing: "Stanford Humanities Center Events", "Archaeology Today Calendar"
+# In the middle of a month, forward and back link to the current month. Solvable problem? Change language
+# to match landing pages: "All events for"
 
 class PostFlipBook:
   """Sets up the flipbooks for posts- yearmonths, tags, all posts."""
