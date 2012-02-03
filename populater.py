@@ -92,10 +92,10 @@ def main(argv):
   fm = file_manager.FileManager()
   ds = datastore.DataStore("database.db")
 
-  start_date = datetime.datetime.now()
+  now = datetime.datetime.now()
   if options.test_date:
-    start_date = datetime.datetime(2012, 01, 31, 8, 25)
-  end_date = start_date + datetime.timedelta(31)
+    now = datetime.datetime(2012, 01, 31, 8, 25)
+  end_date = now + datetime.timedelta(31)
 
   all_events = CalendarFlipBook(calendar_name="Events Calendar",
                                 landing_page_template="calendar-landing-page.tmpl",
@@ -123,12 +123,12 @@ def main(argv):
 
   events = list(ds.GetAllEvents())
   for event in events:
-    all_events.AddEvent(event, start_date, end_date)
-    all_workshops.AddEvent(event, start_date, end_date)
-    flipbooks[event.calendar_title].AddEvent(event, start_date, end_date)
+    all_events.AddEvent(event, now, end_date)
+    all_workshops.AddEvent(event, now, end_date)
+    flipbooks[event.calendar_title].AddEvent(event, now, end_date)
 
   for calendar in calendars:
-    calendar.WriteUpcomingEvents(options, fm, calendars, start_date)
+    calendar.WriteUpcomingEvents(options, fm, calendars, now)
     calendar.WritePerMonthCalendars(options, fm, calendars)
 
   WriteEventPages(options, fm, events, calendars)  # Move me last
@@ -212,21 +212,19 @@ class CalendarFlipBook:
                                         "forward_text": forward and forward.strftime('%b %Y') + "&raquo;",
                                         "minical_uri": minical_uri}])))
 
-  def AddEvent(self, event, start_date, end_date):
+  def AddEvent(self, event, now, end_date):
     self.events.setdefault(
         datetime.datetime(event.start_time.year,
                           event.start_time.month,
                           1),
         []).append(event)
-    now = start_date
-    end = end_date
     self.latest_date = max(self.latest_date or event.start_time, event.start_time)
     self.earliest_date = min(self.earliest_date or event.start_time, event.start_time)
-    if event.start_time >= now and event.start_time <= end:
+    if event.start_time >= now and event.start_time <= end_date:
       self.upcoming.append(event)
     if event.start_time < now:
       self.back_date = max(self.back_date or event.start_time, event.start_time)
-    if event.start_time > end:
+    if event.start_time > end_date:
       self.next_date = min(self.next_date or event.start_time, event.start_time)
 
 
