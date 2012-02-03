@@ -220,7 +220,14 @@ class CalendarFlipBook:
         []).append(event)
     now = start_date
     end = end_date
-
+    if self.latest_date is None:
+      self.latest_date = event.start_time
+    if self.earliest_date is None:
+      self.earliest_date = event.start_time
+    if event.start_time > self.latest_date:
+      self.latest_date = event.start_time
+    if event.start_time < self.earliest_date:
+      self.earliest_date = event.start_time
     if event.start_time >= now and event.start_time <= end:
       self.upcoming.append(event)
     if event.start_time < now:
