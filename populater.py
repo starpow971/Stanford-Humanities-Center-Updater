@@ -10,6 +10,7 @@ from lxml import etree
 from pprint import pprint
 from optparse import OptionParser
 from StringIO import StringIO
+from dateutil import rrule
 import bisect
 import datetime
 import re
@@ -140,6 +141,7 @@ def main(argv):
   for calendar in calendars:
     calendar.WriteUpcomingEvents(options, fm, calendars, now)
     calendar.WritePerMonthCalendars(options, fm, calendars)
+    calendar.WriteMiniCals(options, fm)
 
   WriteEventPages(options, fm, events, calendars)  # Move me last
 
@@ -175,6 +177,41 @@ class CalendarFlipBook:
 
   def __repr__(self):
     return "<Calendar %r>" % self.calendar_name
+    
+  def WriteMiniCals(self, options, fm):
+    if self.earliest_date is None or self.latest_date is None:
+      return
+    first_day = datetime.datetime(self.earliest_date.year,
+                                  self.earliest_date.month,
+                                  1)
+    # NOTE(scottw): weekday() is the ISO weekday, where Monday is day 0. That's stupid, so we have
+    # to perform some modular arithmetic to get the days to work out correctly.
+    first_weekday = (first_day.weekday() + 1) % 7
+    
+    # The last day is the first day of the month after the month containing self.latest_date
+    last_day = datetime.datetime(self.latest_date.year,
+                                 self.latest_date.month,
+                                 1)
+    last_day += datetime.timedelta(days=31)  # that ought to do it!
+    last_day = datetime.datetime(last_day.year, last_day.month, 1)
+    
+    # First, fill out a flat list of days in the range (first_day, last_day]
+    days = [None] * first_weekday  # Pad with None up to first weekday
+    current_day = first_day
+    while current_day < last_day:
+      days.append(current_day)
+      current_day += datetime.timedelta(days=1)
+    days_in_last_week = len(days) % 7
+    days_of_padding = (7 - days_in_last_week) % 7
+    days.extend([None] * days_of_padding)   # Add trailing None to come to exactly a week's worth
+    assert len(days) % 7 == 0, "There should be an even multiple of 7 days!"
+    
+    # Divide up the day list into weeks
+    weeks = []
+    for week in range(len(days) / 7 + 1):
+      sunday = week * 7   # 
+      saturday = sunday + 7
+      weeks.append(days[sunday:saturday])
 
   def WriteUpcomingEvents(self, options, fm, calendars, today):
     forward_url = self.next_date and "../../" + self.month_uri(self.next_date)

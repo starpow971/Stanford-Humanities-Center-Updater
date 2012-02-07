@@ -1,0 +1,83 @@
+<!doctype html>
+<!-- TODO(scottw): Annotate cells with javascript-readable date, so current date can be easily
+     highlighted dynamically. And look at the #fragment identifier to find out which date is the
+     "current" date for daily flipbook pages. -->
+<style type=text/css>
+  body, td, th {
+    font-family: "Arial", sans-serif;
+    font-size: 90%;
+  }
+  td, th {
+    padding: 5px;
+  }
+  th a {
+    text-decoration: none;
+    color: inherit;
+    font-size: 130%;
+  }
+  td { text-align: right; }
+  td a {
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+  }
+  td.m:hover, td.current {
+    background-color: #ddd;
+  }
+  td.today {
+    border: 1px solid #ddd;
+  }
+  table { border-collapse: collapse; }
+</style>
+
+<table>
+  <th colspan=7><a href=#>&laquo;</a> <select><option>Jan</select> <select><option>2012</select> <a href=#>&raquo;</a></th>
+<tr>
+  <th>Su
+  <th>M
+  <th>T
+  <th>W
+  <th>H
+  <th>F
+  <th>Sa
+<tr>
+  <td>
+  <td>
+  <td class=m><a href=#>1</a>
+  <td>2
+  <td class=today>3
+  <td class=m><a href=#>4</a>
+  <td class=m><a href=#>5</a>
+<tr>
+  <td class=m><a href=#>6</a>
+  <td class=m><a href=#>7</a>
+  <td class=m><a href=#>8</a>
+  <td>9
+  <td class=m><a href=#>10</a>
+  <td>11
+  <td class=m><a href=#>12</a>
+<tr>
+  <td class=m><a href=#>13</a>
+  <td class=m><a href=#>14</a>
+  <td>15
+  <td class=m><a href=#>16</a>
+  <td class=m><a href=#>17</a>
+  <td>18
+  <td class=m><a href=#>19</a>
+<tr>
+  <td class=m><a href=#>20</a>
+  <td class=m><a href=#>21</a>
+  <td class="m current"><a href=#>22</a>
+  <td class=m><a href=#>23</a>
+  <td class=m><a href=#>24</a>
+  <td class=m><a href=#>25</a>
+  <td class=m><a href=#>26</a>
+<tr>
+  <td class=m><a href=#>27</a>
+  <td class=m><a href=#>28</a>
+  <td class=m><a href=#>29</a>
+  <td class=m><a href=#>30</a>
+  <td class=m><a href=#>31</a>
+  <td>
+  <td>
+</table>
