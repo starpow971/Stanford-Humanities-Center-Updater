@@ -208,14 +208,24 @@ class CalendarFlipBook:
     assert len(days) % 7 == 0, "There should be an even multiple of 7 days!"
     
     # Divide up the day list into weeks
+    month_start = {}  # month -> first-week-in-this-month
+    month_end = {}  # month -> first-week-past-this-month
     weeks = []
-    for week in range(len(days) / 7 + 1):
+    for week in range(len(days) / 7):
       sunday = week * 7   # 
       saturday = sunday + 7
       weeks.append(days[sunday:saturday])
+      if days[sunday]:
+        sunday_month = datetime.datetime(days[sunday][0].year, days[sunday][0].month, 1)
+        if sunday_month not in month_start:
+          month_start[sunday_month] = week
+      if saturday < len(days) and days[saturday]:
+        saturday_month = datetime.datetime(days[saturday][0].year, days[saturday][0].month, 1)
+        month_end[saturday_month] = week + 1
       
-    print self.daily_events
-    print weeks
+    for month in sorted(month_start.keys()):
+      fm.save(options.output_dir + self.minical_uri(month), "I'm a minical for %r" % month)
+    
 
   def WriteUpcomingEvents(self, options, fm, calendars, today):
     forward_url = self.next_date and "../../" + self.month_uri(self.next_date)
@@ -224,7 +234,7 @@ class CalendarFlipBook:
     back_text = back_url and self.back_date.strftime('%b %Y')
     minical_uri = "../../" + self.minical_uri(today)
     # TESTING CODE
-    fm.save(options.output_dir + self.minical_uri(today), "I'm a minical for %r" % today)
+    # fm.save(options.output_dir + self.minical_uri(today), "I'm a minical for %r" % today)
 
     fm.save(self.landing_page_uri,
             str(Template(file=self.landing_page_template,
@@ -250,7 +260,7 @@ class CalendarFlipBook:
                                                   months[1:] + [None]):
       per_month_name = self.title_prefix + yearmonth.strftime(" For %B %Y")
       minical_uri = "../../" + self.minical_uri(yearmonth)
-      fm.save(options.output_dir + self.minical_uri(yearmonth), "I'm a minical for %r" % yearmonth)
+      # fm.save(options.output_dir + self.minical_uri(yearmonth), "I'm a minical for %r" % yearmonth)
       fm.save(options.output_dir + self.month_uri(yearmonth),
               str(Template(file=self.landing_page_template,
                             searchList=[{"events": events,
