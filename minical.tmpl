@@ -37,7 +37,7 @@
   #if $prev_month:
     <a href=../../$minical_uri($prev_month)>&laquo;</a>
   #end if
-  <select>
+  <!-- <select>
     #for m in sorted($years[$month.year]):
       <option
         #if m == $month:
@@ -54,7 +54,8 @@
         #end if
       >$year
     #end for
-  </select>
+  </select> -->
+  $month.strftime("%b %Y")
   #if $next_month:
     <a href=../../$minical_uri($next_month)>&raquo;</a>
   #end if
