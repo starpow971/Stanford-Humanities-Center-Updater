@@ -12,6 +12,7 @@ from optparse import OptionParser
 from StringIO import StringIO
 from dateutil import rrule
 import bisect
+import collections
 import datetime
 import re
 import sys
@@ -161,6 +162,7 @@ def main(argv):
 def MyAssert(actual, expected):
   assert actual == expected, "Got %r" % actual
 
+
 class CalendarFlipBook:
   def __init__(self, landing_page_template="", calendar_name="", title_prefix="",
                landing_page_uri=""):
@@ -200,33 +202,37 @@ class CalendarFlipBook:
     days = [None] * first_weekday  # Pad with None up to first weekday
     current_day = first_day
     while current_day < last_day:
-      days.append((current_day, self.daily_events.get(current_day, None)))
+      days.append(current_day)
       current_day += datetime.timedelta(days=1)
     days_in_last_week = len(days) % 7
     days_of_padding = (7 - days_in_last_week) % 7
     days.extend([None] * days_of_padding)   # Add trailing None to come to exactly a week's worth
     assert len(days) % 7 == 0, "There should be an even multiple of 7 days!"
     
+    month_starts = {}
+    for num, day in enumerate(days):
+      if not day:
+        continue
+      month = datetime.datetime(day.year, day.month, 1)
+      if month not in month_starts:
+        month_starts[month] = num / 7
+    
+    month_dates = sorted(month_starts.iterkeys())
+    month_starts = [month_starts[month] for month in month_dates]
+    months = dict(zip(month_dates, zip(month_starts[:], month_starts[1:] + [len(days) / 7])))
+    
     # Divide up the day list into weeks
-    month_start = {}  # month -> first-week-in-this-month
-    month_end = {}  # month -> first-week-past-this-month
     weeks = []
     for week in range(len(days) / 7):
-      sunday = week * 7   # 
+      sunday = week * 7
       saturday = sunday + 7
       weeks.append(days[sunday:saturday])
-      if days[sunday]:
-        sunday_month = datetime.datetime(days[sunday][0].year, days[sunday][0].month, 1)
-        if sunday_month not in month_start:
-          month_start[sunday_month] = week
-      if saturday < len(days) and days[saturday]:
-        saturday_month = datetime.datetime(days[saturday][0].year, days[saturday][0].month, 1)
-        month_end[saturday_month] = week + 1
       
-    for month in sorted(month_start.keys()):
+    for month in months:
       fm.save(options.output_dir + self.minical_uri(month),
               str(Template(file="minical.tmpl",
-                         searchList=[{"weeks" : weeks }])))
+                         searchList=[{"weeks" : weeks[months[month][0]:months[month][1] + 1],
+                                      "daily_events": self.daily_events}])))
 
   def WriteUpcomingEvents(self, options, fm, calendars, today):
     forward_url = self.next_date and "../../" + self.month_uri(self.next_date)

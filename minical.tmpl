@@ -45,10 +45,10 @@
   #for day in week:
     #if not day:
       <td>
-    #elif day[1]:
-      <td class=m><a href=#>$day[0].day</a>
+    #elif day in $daily_events:
+      <td class=m><a href=#>$day.day</a>
     #else:
-      <td>2
+      <td>$day.day
     #end if
   #end for
 #end for
