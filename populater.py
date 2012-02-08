@@ -169,6 +169,7 @@ class CalendarFlipBook:
     self.title_prefix = title_prefix
     self.landing_page_uri = landing_page_uri
     self.events = {}  # month -> [event]
+    self.daily_events = {} # day -> [event]
     self.upcoming = []
     self.next_date = None
     self.back_date = None
@@ -199,7 +200,7 @@ class CalendarFlipBook:
     days = [None] * first_weekday  # Pad with None up to first weekday
     current_day = first_day
     while current_day < last_day:
-      days.append(current_day)
+      days.append((current_day, self.daily_events.get(current_day, None)))
       current_day += datetime.timedelta(days=1)
     days_in_last_week = len(days) % 7
     days_of_padding = (7 - days_in_last_week) % 7
@@ -212,6 +213,9 @@ class CalendarFlipBook:
       sunday = week * 7   # 
       saturday = sunday + 7
       weeks.append(days[sunday:saturday])
+      
+    print self.daily_events
+    print weeks
 
   def WriteUpcomingEvents(self, options, fm, calendars, today):
     forward_url = self.next_date and "../../" + self.month_uri(self.next_date)
@@ -260,11 +264,16 @@ class CalendarFlipBook:
                                         "minical_uri": minical_uri}])))
 
   def AddEvent(self, event, now, end_date):
-    self.events.setdefault(
-        datetime.datetime(event.start_time.year,
-                          event.start_time.month,
-                          1),
-        []).append(event)
+    month = datetime.datetime(event.start_time.year, event.start_time.month, 1)
+    if month not in self.events:
+      self.events[month] = []
+    self.events[month].append(event)
+        
+    day = datetime.datetime(event.start_time.year, event.start_time.month, event.start_time.day)
+    if day not in self.daily_events:       # if k in a
+      self.daily_events[day] = []
+    self.daily_events[day].append(event)
+      
     self.latest_date = max(self.latest_date or event.start_time, event.start_time)
     self.earliest_date = min(self.earliest_date or event.start_time, event.start_time)
     if event.start_time >= now and event.start_time <= end_date:
