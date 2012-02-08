@@ -78,7 +78,7 @@
       #if day in $daily_events:
         m
       #end if
-      " data-date="$day.strftime('%a, %d %b %Y %H:%M:%S %z')">
+      " data-date="$day.strftime('%d %b %Y')">
       #if day in $daily_events:
         <a href=../../$day_uri(day) target=_top>
       #end if
@@ -93,16 +93,29 @@
 #end for
 </table>
 <script>
-  var today = new Date();
-  var tds = document.getElementsByTagName("td");
-  for (i in tds) {
-    var td = tds[i];
-    var d = new Date(td.getAttribute("data-date"));
-    if (today.getFullYear() == d.getFullYear() &&
-        today.getMonth() == d.getMonth() &&
-        today.getDate() == d.getDate()) {
-      td.className = td.className + " today";
-      break;
+  // (function(){
+    var today = new Date();
+    var tds = document.getElementsByTagName("td");
+    var hash = document.location.hash;
+    var highlighted = false;
+    if (hash.length > 0) {
+      var hashparams = hash.substring(1).split(":");
+      if (hashparams.length > 1 && hashparams[0] == "day") {
+        highlighted = hashparams[1];
+      }
     }
-  }
+    for (var i = 0; i < tds.length; ++i) {
+      var td = tds[i];
+      var ds = td.getAttribute("data-date");
+      var d = new Date(ds);
+      if (today.getFullYear() == d.getFullYear() &&
+          today.getMonth() == d.getMonth() &&
+          today.getDate() == d.getDate()) {
+        td.className = td.className + " today";
+      }
+      if (ds == highlighted) {
+        td.className = td.className + " current";
+      }
+    }
+ // })();
 </script>

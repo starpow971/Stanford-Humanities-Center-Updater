@@ -292,7 +292,7 @@ class CalendarFlipBook:
   def WritePerDayCalendars(self, options, fm, calendars):
     for day, events in self.daily_events.iteritems():
       per_day_name = self.title_prefix + day.strftime(" For %B %d, %Y")
-      minical_uri = "../../" + self.minical_uri(day)
+      minical_uri = "../../" + self.minical_uri(day) + "#day:" + day.strftime('%d %b %Y')
       fm.save(options.output_dir + self.day_uri(day),
               str(Template(file=self.landing_page_template,
                             searchList=[{"events": events,
