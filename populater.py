@@ -142,6 +142,7 @@ def main(argv):
   for calendar in calendars:
     calendar.WriteUpcomingEvents(options, fm, calendars, now)
     calendar.WritePerMonthCalendars(options, fm, calendars)
+    calendar.WritePerDayCalendars(options, fm, calendars)
     calendar.WriteMiniCals(options, fm)
 
   WriteEventPages(options, fm, events, calendars)  # Move me last
@@ -238,7 +239,8 @@ class CalendarFlipBook:
                                       "years": years,
                                       "prev_month": prev_month,
                                       "next_month": next_month,
-                                      "minical_uri": self.minical_uri
+                                      "minical_uri": self.minical_uri,
+                                      "day_uri": self.day_uri
                                       }])))
 
   def WriteUpcomingEvents(self, options, fm, calendars, today):
@@ -286,6 +288,21 @@ class CalendarFlipBook:
                                         # TODO(chris): Put &raquo; in the template
                                         "forward_text": forward and forward.strftime('%b %Y') + "&raquo;",
                                         "minical_uri": minical_uri}])))
+                                        
+  def WritePerDayCalendars(self, options, fm, calendars):
+    for day, events in self.daily_events.iteritems():
+      per_day_name = self.title_prefix + day.strftime(" For %B %d, %Y")
+      minical_uri = "../../" + self.minical_uri(day)
+      fm.save(options.output_dir + self.day_uri(day),
+              str(Template(file=self.landing_page_template,
+                            searchList=[{"events": events,
+                                        "calendar_urls": [(c.calendar_name, c.landing_page_uri) for c in calendars],
+                                        "calendar_title": per_day_name,
+                                        "back_url": None,
+                                        "back_text": None,
+                                        "forward_url": None,
+                                        "forward_text": None,
+                                        "minical_uri": minical_uri}])))
 
   def AddEvent(self, event, now, end_date):
     month = datetime.datetime(event.start_time.year, event.start_time.month, 1)
@@ -315,6 +332,14 @@ class CalendarFlipBook:
       return yearmonth.strftime("workshops/calendar/%Y-%m.html")
     else:
       return yearmonth.strftime("events/calendar/%%Y-%%m-%s.html" % friendly_title(self.calendar_name))
+      
+  def day_uri(self, day):
+    if self.calendar_name == "Events Calendar":
+      return day.strftime("events/calendar/%Y-%m-%d.html")
+    if self.calendar_name == "Workshop Calendar":
+      return day.strftime("workshops/calendar/%Y-%m-%d.html")
+    else:
+      return day.strftime("events/calendar/%%Y-%%m-%%d-%s.html" % friendly_title(self.calendar_name))
 
   def minical_uri(self, yearmonth):
     if self.calendar_name == "Events Calendar":

@@ -1,7 +1,5 @@
 <!doctype html>
-<!-- TODO(scottw): Annotate cells with javascript-readable date, so current date can be easily
-     highlighted dynamically. And look at the #fragment identifier to find out which date is the
-     "current" date for daily flipbook pages. -->
+<!-- TODO(scottw): Javascript for month/year buttons. -->
 <style type=text/css>
   body, td, th {
     font-family: "Arial", sans-serif;
@@ -82,7 +80,7 @@
       #end if
       " data-date="$day.strftime('%a, %d %b %Y %H:%M:%S %z')">
       #if day in $daily_events:
-        <a href=../../$minical_uri(day)>
+        <a href=../../$day_uri(day) target=_top>
       #end if
       $day.day
       #if day in $daily_events:
