@@ -192,11 +192,7 @@ class CalendarFlipBook:
     first_weekday = (first_day.weekday() + 1) % 7
     
     # The last day is the first day of the month after the month containing self.latest_date
-    last_day = datetime.datetime(self.latest_date.year,
-                                 self.latest_date.month,
-                                 1)
-    last_day += datetime.timedelta(days=31)  # that ought to do it!
-    last_day = datetime.datetime(last_day.year, last_day.month, 1)
+    last_day = datetime.datetime(self.latest_date.year + 1, 1, 1)
     
     # First, fill out a flat list of days in the range (first_day, last_day]
     days = [None] * first_weekday  # Pad with None up to first weekday
@@ -217,9 +213,7 @@ class CalendarFlipBook:
       if month not in month_starts:
         month_starts[month] = num / 7
     
-    month_dates = sorted(month_starts.iterkeys())
-    month_starts = [month_starts[month] for month in month_dates]
-    months = dict(zip(month_dates, zip(month_starts[:], month_starts[1:] + [len(days) / 7])))
+    months = month_starts
     
     # Divide up the day list into weeks
     weeks = []
@@ -228,11 +222,23 @@ class CalendarFlipBook:
       saturday = sunday + 7
       weeks.append(days[sunday:saturday])
       
+    years = {}
     for month in months:
+      years.setdefault(month.year, []).append(month)
+      
+    month_dates = sorted(months.keys())
+    for prev_month, month, next_month in zip([None] + month_dates[:-1],
+                                             month_dates,
+                                             month_dates[1:] + [None]):
       fm.save(options.output_dir + self.minical_uri(month),
               str(Template(file="minical.tmpl",
-                         searchList=[{"weeks" : weeks[months[month][0]:months[month][1] + 1],
-                                      "daily_events": self.daily_events}])))
+                         searchList=[{"weeks" : weeks[months[month]:months[month] + 6],
+                                      "daily_events": self.daily_events,
+                                      "month": month,
+                                      "years": years,
+                                      "prev_month": prev_month and self.minical_uri(prev_month),
+                                      "next_month": next_month and self.minical_uri(next_month)
+                                      }])))
 
   def WriteUpcomingEvents(self, options, fm, calendars, today):
     forward_url = self.next_date and "../../" + self.month_uri(self.next_date)
