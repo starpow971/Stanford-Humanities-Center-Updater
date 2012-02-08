@@ -40,6 +40,20 @@
   <th>H
   <th>F
   <th>Sa
+#for week in $weeks:
+  <tr>
+  #for day in week:
+    #if not day:
+      <td>
+    #elif day[1]:
+      <td class=m><a href=#>$day[0].day</a>
+    #else:
+      <td>2
+    #end if
+  #end for
+#end for
+<!-- 
+  
 <tr>
   <td>
   <td>
@@ -80,4 +94,5 @@
   <td class=m><a href=#>31</a>
   <td>
   <td>
+  -->
 </table>

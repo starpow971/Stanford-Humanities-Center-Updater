@@ -224,8 +224,9 @@ class CalendarFlipBook:
         month_end[saturday_month] = week + 1
       
     for month in sorted(month_start.keys()):
-      fm.save(options.output_dir + self.minical_uri(month), "I'm a minical for %r" % month)
-    
+      fm.save(options.output_dir + self.minical_uri(month),
+              str(Template(file="minical.tmpl",
+                         searchList=[{"weeks" : weeks }])))
 
   def WriteUpcomingEvents(self, options, fm, calendars, today):
     forward_url = self.next_date and "../../" + self.month_uri(self.next_date)
