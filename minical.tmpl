@@ -8,7 +8,8 @@
     font-size: 90%;
   }
   td, th {
-    padding: 5px;
+    padding: 4px;
+    border: 1px solid white;
   }
   th a {
     text-decoration: none;
@@ -36,7 +37,7 @@
 <table>
   <th colspan=7>
   #if $prev_month:
-    <a href=../../$prev_month>&laquo;</a>
+    <a href=../../$minical_uri($prev_month)>&laquo;</a>
   #end if
   <select>
     #for m in sorted($years[$month.year]):
@@ -57,7 +58,7 @@
     #end for
   </select>
   #if $next_month:
-    <a href=../../$next_month>&raquo;</a>
+    <a href=../../$minical_uri($next_month)>&raquo;</a>
   #end if
   </th>
 <tr>
@@ -71,60 +72,39 @@
 #for week in $weeks:
   <tr>
   #for day in week:
-    #if not day:
+    #if day:
+      <td class="
+      #if day.month != $month.month:
+        n
+      #end if
+      #if day in $daily_events:
+        m
+      #end if
+      " data-date="$day.strftime('%a, %d %b %Y %H:%M:%S %z')">
+      #if day in $daily_events:
+        <a href=../../$minical_uri(day)>
+      #end if
+      $day.day
+      #if day in $daily_events:
+        </a>
+      #end if
+    #else
       <td>
-    #elif day.month != $month.month and day not in $daily_events:
-      <td class=n>$day.day
-    #elif day.month != $month.month and day in $daily_events:
-      <td class="n m"><a href=#>$day.day</a>
-    #elif day in $daily_events:
-      <td class=m><a href=#>$day.day</a>
-    #else:
-      <td>$day.day
     #end if
   #end for
 #end for
-<!-- 
-  
-<tr>
-  <td>
-  <td>
-  <td class=m><a href=#>1</a>
-  <td>2
-  <td class=today>3
-  <td class=m><a href=#>4</a>
-  <td class=m><a href=#>5</a>
-<tr>
-  <td class=m><a href=#>6</a>
-  <td class=m><a href=#>7</a>
-  <td class=m><a href=#>8</a>
-  <td>9
-  <td class=m><a href=#>10</a>
-  <td>11
-  <td class=m><a href=#>12</a>
-<tr>
-  <td class=m><a href=#>13</a>
-  <td class=m><a href=#>14</a>
-  <td>15
-  <td class=m><a href=#>16</a>
-  <td class=m><a href=#>17</a>
-  <td>18
-  <td class=m><a href=#>19</a>
-<tr>
-  <td class=m><a href=#>20</a>
-  <td class=m><a href=#>21</a>
-  <td class="m current"><a href=#>22</a>
-  <td class=m><a href=#>23</a>
-  <td class=m><a href=#>24</a>
-  <td class=m><a href=#>25</a>
-  <td class=m><a href=#>26</a>
-<tr>
-  <td class=m><a href=#>27</a>
-  <td class=m><a href=#>28</a>
-  <td class=m><a href=#>29</a>
-  <td class=m><a href=#>30</a>
-  <td class=m><a href=#>31</a>
-  <td>
-  <td>
-  -->
 </table>
+<script>
+  var today = new Date();
+  var tds = document.getElementsByTagName("td");
+  for (i in tds) {
+    var td = tds[i];
+    var d = new Date(td.getAttribute("data-date"));
+    if (today.getFullYear() == d.getFullYear() &&
+        today.getMonth() == d.getMonth() &&
+        today.getDate() == d.getDate()) {
+      td.className = td.className + " today";
+      break;
+    }
+  }
+</script>

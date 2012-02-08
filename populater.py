@@ -236,8 +236,9 @@ class CalendarFlipBook:
                                       "daily_events": self.daily_events,
                                       "month": month,
                                       "years": years,
-                                      "prev_month": prev_month and self.minical_uri(prev_month),
-                                      "next_month": next_month and self.minical_uri(next_month)
+                                      "prev_month": prev_month,
+                                      "next_month": next_month,
+                                      "minical_uri": self.minical_uri
                                       }])))
 
   def WriteUpcomingEvents(self, options, fm, calendars, today):
