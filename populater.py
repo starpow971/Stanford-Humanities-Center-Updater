@@ -181,7 +181,7 @@ class CalendarFlipBook:
 
   def __repr__(self):
     return "<Calendar %r>" % self.calendar_name
-    
+
   def WriteMiniCals(self, options, fm):
     if self.earliest_date is None or self.latest_date is None:
       return
@@ -191,10 +191,10 @@ class CalendarFlipBook:
     # NOTE(scottw): weekday() is the ISO weekday, where Monday is day 0. That's stupid, so we have
     # to perform some modular arithmetic to get the days to work out correctly.
     first_weekday = (first_day.weekday() + 1) % 7
-    
+
     # The last day is the first day of the month after the month containing self.latest_date
     last_day = datetime.datetime(self.latest_date.year + 1, 1, 1)
-    
+
     # First, fill out a flat list of days in the range (first_day, last_day]
     days = [None] * first_weekday  # Pad with None up to first weekday
     current_day = first_day
@@ -205,7 +205,7 @@ class CalendarFlipBook:
     days_of_padding = (7 - days_in_last_week) % 7
     days.extend([None] * days_of_padding)   # Add trailing None to come to exactly a week's worth
     assert len(days) % 7 == 0, "There should be an even multiple of 7 days!"
-    
+
     month_starts = {}
     for num, day in enumerate(days):
       if not day:
@@ -213,20 +213,20 @@ class CalendarFlipBook:
       month = datetime.datetime(day.year, day.month, 1)
       if month not in month_starts:
         month_starts[month] = num / 7
-    
+
     months = month_starts
-    
+
     # Divide up the day list into weeks
     weeks = []
     for week in range(len(days) / 7):
       sunday = week * 7
       saturday = sunday + 7
       weeks.append(days[sunday:saturday])
-      
+
     years = {}
     for month in months:
       years.setdefault(month.year, []).append(month)
-      
+
     month_dates = sorted(months.keys())
     for prev_month, month, next_month in zip([None] + month_dates[:-1],
                                              month_dates,
@@ -274,7 +274,7 @@ class CalendarFlipBook:
     for (yearmonth, events), back, forward in zip(month_events,
                                                   [None] + months[:-1],
                                                   months[1:] + [None]):
-      per_month_name = self.title_prefix + yearmonth.strftime(" For %B %Y")
+      per_month_name = self.calendar_name + yearmonth.strftime(": %B %Y")
       minical_uri = "../../" + self.minical_uri(yearmonth)
       # fm.save(options.output_dir + self.minical_uri(yearmonth), "I'm a minical for %r" % yearmonth)
       fm.save(options.output_dir + self.month_uri(yearmonth),
@@ -288,10 +288,10 @@ class CalendarFlipBook:
                                         # TODO(chris): Put &raquo; in the template
                                         "forward_text": forward and forward.strftime('%b %Y') + "&raquo;",
                                         "minical_uri": minical_uri}])))
-                                        
+
   def WritePerDayCalendars(self, options, fm, calendars):
     for day, events in self.daily_events.iteritems():
-      per_day_name = self.title_prefix + day.strftime(" For %B %d, %Y")
+      per_day_name = self.calendar_name + day.strftime(": %B %d, %Y")
       minical_uri = "../../" + self.minical_uri(day) + "#day:" + day.strftime('%d %b %Y')
       fm.save(options.output_dir + self.day_uri(day),
               str(Template(file=self.landing_page_template,
@@ -309,12 +309,12 @@ class CalendarFlipBook:
     if month not in self.events:
       self.events[month] = []
     self.events[month].append(event)
-        
+
     day = datetime.datetime(event.start_time.year, event.start_time.month, event.start_time.day)
     if day not in self.daily_events:       # if k in a
       self.daily_events[day] = []
     self.daily_events[day].append(event)
-      
+
     self.latest_date = max(self.latest_date or event.start_time, event.start_time)
     self.earliest_date = min(self.earliest_date or event.start_time, event.start_time)
     if event.start_time >= now and event.start_time <= end_date:
@@ -332,7 +332,7 @@ class CalendarFlipBook:
       return yearmonth.strftime("workshops/calendar/%Y-%m.html")
     else:
       return yearmonth.strftime("events/calendar/%%Y-%%m-%s.html" % friendly_title(self.calendar_name))
-      
+
   def day_uri(self, day):
     if self.calendar_name == "Events Calendar":
       return day.strftime("events/calendar/%Y-%m-%d.html")
