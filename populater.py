@@ -92,12 +92,6 @@ def parse_args(argv):
     options.output_dir += "/"
   return options, args
 
-# TODO(chris): Add the following to the landing page templates:
-# #if $minical_uri
-#    <iframe src=$minical_uri></iframe>
-# #endif
-# and put "minical_uri": None in your searchLists.
-
 
 def main(argv):
   options, args = parse_args(argv)
