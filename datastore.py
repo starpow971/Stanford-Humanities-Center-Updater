@@ -71,20 +71,20 @@ class DataStore:
               already_have_events[event.event_id], event.updated))
           self.c.execute("update events set updated=?, calendar_title=?, event_title=?, "
                          "start_time=?, end_time=?, location=?, status=?, description=?, "
-                         "is_all_day=?, thumbnail=?, full_image=? "
+                         "is_all_day=?, thumbnail=?, full_image=?, endowment_title=? "
                          "where id=?",
                          (event.updated, event.calendar_title, event.event_title,
                           ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
                            event.status, event.description, int(event.is_all_day),
-                           event.thumbnail, event.full_image, event.event_id))
+                           event.thumbnail, event.full_image, event.endowment_title, event.event_id))
       else:
         # Must be a new event!
         logging.warning("New event %s" % event.event_id)
-        self.c.execute("insert into events values (?,?,?,?,?,?,?,?,?,?,?,?)",
+        self.c.execute("insert into events values (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                        (event.event_id, event.updated, event.calendar_title, event.event_title,
                         ToTimestamp(event.start_time), ToTimestamp(event.end_time), event.location,
                         event.status, event.description, int(event.is_all_day), event.thumbnail,
-                        event.full_image))
+                        event.full_image, event.endowment_title))
     for post in posts:
       if post.id in already_have_posts:
         if already_have_posts[post.id] == post.updated:
@@ -116,7 +116,8 @@ class DataStore:
                    description=row[8] or "",
                    is_all_day=bool(row[9]),
                    thumbnail=row[10] or None,
-                   full_image=row[11] or None)
+                   full_image=row[11] or None,
+                   endowment_title=row[12] or None)
         for row in self.c if row[7] != "canceled"]
 
   def GetEventsInRange(self, start_date, end_date):
