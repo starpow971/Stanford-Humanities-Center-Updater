@@ -255,7 +255,7 @@ class CalendarFlipBook:
                                       #   #for calendar in calendars
                                       #     <a href="$calendar.uri()">$calendar.calendar_name</a>
                                       #   #end
-                                      "calendar_urls": [(c.calendar_name, self.landing_page_uri) for c in calendars],
+                                      "calendar_urls": [(c.calendar_name, c.landing_page_uri) for c in calendars],
                                       "forward_url": forward_url,
                                       "forward_text": forward_text,
                                       "back_url": back_url,
