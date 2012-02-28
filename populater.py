@@ -105,11 +105,11 @@ def main(argv):
 
   all_events = CalendarFlipBook(calendar_name="Events Calendar",
                                 landing_page_template="calendar-landing-page.tmpl",
-                                landing_page_uri=options.output_dir + "events/calendar/index.html",
+                                landing_page_uri="events/calendar/index.html",
                                 title_prefix="Events")
   all_workshops = CalendarFlipBook(calendar_name="Workshop Calendar",
                                    landing_page_template="workshop-landing-page.tmpl",
-                                   landing_page_uri=options.output_dir + "workshops/calendar/index.html",
+                                   landing_page_uri="workshops/calendar/index.html",
                                    title_prefix="Workshop Events")
 
   flipbooks = {} #calendar_name -> flipbook
@@ -118,9 +118,9 @@ def main(argv):
     if c.calendar_name in ("Stanford Humanities Center Events",
                            "Co-sponsored Events Held at the Humanities Center",
                            "Test SHC Calendar"):
-      landing_page_uri=options.output_dir + "events/calendar/%s.html" % friendly_title(c.calendar_name)
+      landing_page_uri="events/calendar/%s.html" % friendly_title(c.calendar_name)
     else:
-      landing_page_uri=options.output_dir + "workshops/calendar/%s.html" % friendly_title(c.calendar_name)
+      landing_page_uri="workshops/calendar/%s.html" % friendly_title(c.calendar_name)
     flipbooks[c.calendar_name] = CalendarFlipBook(calendar_name=c.calendar_name,
                                                   title_prefix=c.calendar_name + " Events",
                                                   landing_page_template=c.landing_page_template,
@@ -246,7 +246,7 @@ class CalendarFlipBook:
     # TESTING CODE
     # fm.save(options.output_dir + self.minical_uri(today), "I'm a minical for %r" % today)
 
-    fm.save(self.landing_page_uri,
+    fm.save(options.output_dir + self.landing_page_uri,
             str(Template(file=self.landing_page_template,
                          searchList=[{"events": self.upcoming,
                                       "calendar_title": self.calendar_name,
@@ -443,7 +443,7 @@ def SanityCheck(fm, options):
 
   jan_shc_text = fm.GetFile(options.output_dir + "events/calendar/2012-01-test-shc-calendar.html")
   dom = etree.HTML(jan_shc_text)
-  MyAssert(dom.xpath('//title')[0].text,'Test SHC Calendar Events For January 2012 | Stanford Humanities Center')
+  MyAssert(dom.xpath('//title')[0].text,'Test SHC Calendar: January 2012 | Stanford Humanities Center')
   assert dom.xpath('//iframe[@id = "minical"]')
   MyAssert(dom.xpath('//iframe[@id = "minical"]')[0].get('src'), "../../events/calendar/2012-01-test-shc-calendar.mini.html")
   assert dom.xpath('//div[@id = "topnext"]')
@@ -457,7 +457,7 @@ def SanityCheck(fm, options):
 
   mar_shc_text = fm.GetFile(options.output_dir + "events/calendar/2012-03-test-shc-calendar.html")
   dom = etree.HTML(mar_shc_text)
-  MyAssert(dom.xpath('//title')[0].text,'Test SHC Calendar Events For March 2012 | Stanford Humanities Center')
+  MyAssert(dom.xpath('//title')[0].text,'Test SHC Calendar: March 2012 | Stanford Humanities Center')
   assert dom.xpath('//iframe[@id = "minical"]')
   MyAssert(dom.xpath('//iframe[@id = "minical"]')[0].get('src'), "../../events/calendar/2012-03-test-shc-calendar.mini.html")
   assert not dom.xpath('//div[@id = "topnext"]')
@@ -471,7 +471,7 @@ def SanityCheck(fm, options):
 
   jan_workshop_text = fm.GetFile(options.output_dir + "events/calendar/2012-01-test-workshop-calendar.html")
   dom = etree.HTML(jan_workshop_text)
-  MyAssert(dom.xpath('//title')[0].text,'Test Workshop Calendar Events For January 2012 | Stanford Humanities Center')
+  MyAssert(dom.xpath('//title')[0].text,'Test Workshop Calendar: January 2012 | Stanford Humanities Center')
   assert dom.xpath('//iframe[@id = "minical"]')
   MyAssert(dom.xpath('//iframe[@id = "minical"]')[0].get('src'), "../../events/calendar/2012-01-test-workshop-calendar.mini.html")
   assert dom.xpath('//div[@id = "topnext"]')
@@ -484,7 +484,7 @@ def SanityCheck(fm, options):
 
   mar_workshop_text = fm.GetFile(options.output_dir + "events/calendar/2012-03-test-workshop-calendar.html")
   dom = etree.HTML(mar_workshop_text)
-  MyAssert(dom.xpath('//title')[0].text,'Test Workshop Calendar Events For March 2012 | Stanford Humanities Center')
+  MyAssert(dom.xpath('//title')[0].text,'Test Workshop Calendar: March 2012 | Stanford Humanities Center')
   assert dom.xpath('//iframe[@id = "minical"]')
   MyAssert(dom.xpath('//iframe[@id = "minical"]')[0].get('src'), "../../events/calendar/2012-03-test-workshop-calendar.mini.html")
   assert not dom.xpath('//div[@id = "topnext"]')
@@ -498,7 +498,7 @@ def SanityCheck(fm, options):
 
   feb_landing_page = fm.GetFile(options.output_dir + "events/calendar/2012-02.html")
   dom = etree.HTML(feb_landing_page)
-  MyAssert(dom.xpath('//title')[0].text,'Events For February 2012 | Stanford Humanities Center')
+  MyAssert(dom.xpath('//title')[0].text,'Events Calendar: February 2012 | Stanford Humanities Center')
   assert dom.xpath('//iframe[@id = "minical"]')
   MyAssert(dom.xpath('//iframe[@id = "minical"]')[0].get('src'), "../../events/calendar/2012-02.mini.html")
   assert dom.xpath('//div[@id = "topnext"]')
@@ -516,7 +516,7 @@ def SanityCheck(fm, options):
 
   feb_workshop_page = fm.GetFile(options.output_dir + "workshops/calendar/2012-02.html")
   dom = etree.HTML(feb_workshop_page)
-  MyAssert(dom.xpath('//title')[0].text,'Workshop Events For February 2012 | Stanford Humanities Center')
+  MyAssert(dom.xpath('//title')[0].text,'Workshop Calendar: February 2012 | Stanford Humanities Center')
   assert dom.xpath('//iframe[@id = "minical"]')
   MyAssert(dom.xpath('//iframe[@id = "minical"]')[0].get('src'), "../../workshops/calendar/2012-02.mini.html")
   assert dom.xpath('//div[@id = "topnext"]')
