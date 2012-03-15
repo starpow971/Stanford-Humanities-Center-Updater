@@ -178,6 +178,7 @@ var e = \$('#stacks_in_1473_page107');
 	<div id="topback"><a href="$back_url">&laquo;$back_text</a></div>
 	#end if
 	#for $event in $events
+	#if $event.calendar_title not in ("Test SHC Calendar", "Test Workshop Calendar")
 	#if $event.thumbnail
 <img src="$event.thumbnail" style="float:left; padding: 5px"/>
 	#end if
@@ -195,6 +196,7 @@ var e = \$('#stacks_in_1473_page107');
 | $event.location<br><br style="clear:both"/>
 <hr>
 <br></span>
+	#end if
 	#end if
 	#end for
 	#if $forward_url and $forward_text
