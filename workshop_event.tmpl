@@ -180,7 +180,7 @@ var e = \$('#stacks_in_1544_page28');
 </div></div>
 </div>
 <div class='stacks_div stacks_right'>
-<div id='stacks_out_1552_page28' class='stacks_out'><div id='stacks_in_1552_page28' class='stacks_in'><span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /></span><br /><br />
+<div id='stacks_out_1552_page28' class='stacks_out'><div id='stacks_in_1552_page28' class='stacks_in'><span style="color:#000000;"><a href="../../events/calendar/" rel="self" title="Calendar">Main Event Calendar</a></span><span style="color:#000000;font-weight:bold; "><br /><br />Workshop Calendars:</span><span style="color:#70694E;"><br /></span><br /><br /><br />
 	#for name, uri in sorted($calendar_urls)
 	#if $name != "Stanford Humanities Center Events" and $name != "Co-sponsored Events Held at the Humanities Center" and $name != "Test SHC Calendar" and $name != "Test Workshop Calendar"
 	<a href="../../$uri">$name</a><br><br>
@@ -204,8 +204,10 @@ var e = \$('#stacks_in_1544_page28');
 	$event.end_time.strftime("-%I:%M %p")
 	#end if
 	| $event.location<br /><br />
-	$event.description<br /><hr><br /></span>
-	</div></div><div id='stacks_out_1557_page28' class='stacks_out'><div id='stacks_in_1557_page28' class='stacks_in'><!-- Like It Stack v2.0.2 by Joe Workman -->
+	$event.description<br /><hr><br />
+	</span>
+
+</div></div><div id='stacks_out_1557_page28' class='stacks_out'><div id='stacks_in_1557_page28' class='stacks_in'><!-- Like It Stack v2.0.2 by Joe Workman -->
 
 
 	<!-- Email Button: http://twitter.com/about/resources/buttons -->	
