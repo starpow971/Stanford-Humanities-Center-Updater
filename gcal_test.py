@@ -66,9 +66,18 @@ PDT<br />
 <br />Where: Stanford Humanities Center Levinthal Hall
 <br />Event Status: confirmed
 <br />Event Description: Alastair Macaulay, chief dance critic of &#39;The New York Times&#39; and former chief theatre critic for &#39;The Financial Times&#39;, has written in the past year about the movie &#39;Black Swan&#39;, about Grand Central Station as choreography, and about the artist Degas&#39;s depictions of ballet in painting and sculpture. He speaks about reviewing the performing arts today within a wider cultural framework.
-When: Tue Aug 16, 2011 3pm to Tue Aug 16, 2011 7:30pm
+
+
+<br />Event Status: confirmed
+"""
+
+description5 = """
+When: Fri Jun 1, 2012 to Sun Jun 3, 2012
 PDT<br />
 
+<br />Where: Stanford Humanities Center Levinthal Hall
+<br />Event Status: confirmed
+<br />Event Description: Alastair Macaulay, chief dance critic of &#39;The New York Times&#39; and former chief theatre critic for &#39;The Financial Times&#39;, has written in the past year about the movie &#39;Black Swan&#39;, about Grand Central Station as choreography, and about the artist Degas&#39;s depictions of ballet in painting and sculpture. He speaks about reviewing the performing arts today within a wider cultural framework.
 
 <br />Event Status: confirmed
 """
@@ -90,6 +99,11 @@ class GcalTest(unittest.TestCase):
     start, end, allday = gcal.parse_dates("Thu Oct 13, 2011 1pm to 3pm PDT")
     self.assertEquals(start, datetime.datetime(2011, 10, 13, 13))
     self.assertEquals(end, datetime.datetime(2011, 10, 13, 15))
+
+  def testParseDateMultiDay(self):
+    start, end, allday = gcal.parse_dates("Fri Jun 1, 2012 to Sun Jun 3, 2012")
+    self.assertEquals(start, datetime.datetime(2012, 06, 1))
+    self.assertEquals(end, datetime.datetime(2012, 06, 3))
 
   def testParseDateFullNoMin(self):
     start, end, allday = gcal.parse_dates(
