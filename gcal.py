@@ -148,22 +148,22 @@ class ParseError(Exception): pass
 def parse_dates(when):
   print when
   """Parses a Google Calendar when annotation."""
-  is_all_day = " to " not in when
-  if is_all_day:
+  has_one_date = " to " not in when
+  if has_one_date:
     start_string = when
     end_string = when
   else:
     start_string, end_string = when.split(" to ", 1)
 
   start_format = "%a %b %d, %Y"
-  if not is_all_day:
+  if not has_one_date:
     start_format += " %I"
   if ':' in start_string:
     start_format += ":%M"
-  if not is_all_day:
+  if not has_one_date:
     start_format += "%p"
 
-  if is_all_day:
+  if has_one_date:
     end_format = start_format
   else:
     end_format = ""
@@ -180,7 +180,7 @@ def parse_dates(when):
                                    end_format)
   end = datetime.datetime(start.year, start.month, start.day, end.hour,
                           end.minute)
-  return start, end, is_all_day
+  return start, end, has_one_date
 
 def parse_description(description):
   """Parses a Google Calendar description.
