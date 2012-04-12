@@ -146,7 +146,6 @@ assert DESCRIPTION_WHEN_RE
 class ParseError(Exception): pass
 
 def parse_dates(when):
-  print when
   """Parses a Google Calendar when annotation."""
   has_one_date = " to " not in when
   if has_one_date:
