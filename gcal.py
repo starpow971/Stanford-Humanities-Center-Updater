@@ -156,11 +156,11 @@ def parse_dates(when):
     start_string, end_string = when.split(" to ", 1)
 
   start_format = "%a %b %d, %Y"
-  if not has_one_date:
+  if "am" in start_string or "pm" in start_string:
     start_format += " %I"
   if ':' in start_string:
     start_format += ":%M"
-  if not has_one_date:
+  if "am" in start_string or "pm" in start_string:
     start_format += "%p"
 
   if has_one_date:
@@ -168,18 +168,27 @@ def parse_dates(when):
   else:
     end_format = ""
     if ',' in end_string:
-      end_format += "%a %b %d, %Y "
-    end_format += "%I"
+      end_format += "%a %b %d, %Y"
+    if "am" in end_string or "pm" in end_string:
+      if end_format:
+        end_format += " "
+      end_format += "%I"
     if ':' in end_string:
       end_format += ":%M"
-    end_format += "%p %Z"
+    if "am" in end_string or "pm" in end_string:
+      end_format += "%p"
+      if "PDT" in end_string:
+        end_format += " PDT"
+      if "PST" in end_string:
+        end_format += " PST"
 
   start = datetime.datetime.strptime(start_string.encode('ascii', 'ignore'),
                                      start_format)
   end = datetime.datetime.strptime(end_string.encode('ascii', 'ignore'),
                                    end_format)
-  end = datetime.datetime(start.year, start.month, start.day, end.hour,
-                          end.minute)
+  if ',' not in end_string:
+    end = datetime.datetime(start.year, start.month, start.day, end.hour,
+                            end.minute)
   return start, end, has_one_date
 
 def parse_description(description):

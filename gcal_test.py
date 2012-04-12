@@ -73,7 +73,7 @@ PDT<br />
 
 description5 = """
 When: Fri Jun 1, 2012 to Sun Jun 3, 2012
-PDT<br />
+PST<br />
 
 <br />Where: Stanford Humanities Center Levinthal Hall
 <br />Event Status: confirmed
@@ -102,8 +102,8 @@ class GcalTest(unittest.TestCase):
 
   def testParseDateMultiDay(self):
     start, end, allday = gcal.parse_dates("Fri Jun 1, 2012 to Sun Jun 3, 2012")
-    self.assertEquals(start, datetime.datetime(2012, 06, 1))
-    self.assertEquals(end, datetime.datetime(2012, 06, 3))
+    self.assertEquals(start, datetime.datetime(2012, 6, 1))
+    self.assertEquals(end, datetime.datetime(2012, 6, 3))
 
   def testParseDateFullNoMin(self):
     start, end, allday = gcal.parse_dates(
