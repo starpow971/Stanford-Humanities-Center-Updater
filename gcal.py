@@ -158,9 +158,8 @@ def parse_dates(when):
   start_format = "%a %b %d, %Y"
   if "am" in start_string or "pm" in start_string:
     start_format += " %I"
-  if ':' in start_string:
-    start_format += ":%M"
-  if "am" in start_string or "pm" in start_string:
+    if ':' in start_string:
+      start_format += ":%M"
     start_format += "%p"
 
   if has_one_date:
@@ -173,9 +172,8 @@ def parse_dates(when):
       if end_format:
         end_format += " "
       end_format += "%I"
-    if ':' in end_string:
-      end_format += ":%M"
-    if "am" in end_string or "pm" in end_string:
+      if ':' in end_string:
+        end_format += ":%M"
       end_format += "%p"
       if "PDT" in end_string:
         end_format += " PDT"
